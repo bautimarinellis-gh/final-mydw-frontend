@@ -2,7 +2,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FireIcon, HeartIcon, UserIcon } from './icons';
 import './NavigationBar.css';
 
-const NavigationBar = () => {
+interface NavigationBarProps {
+  isModalOpen?: boolean;
+}
+
+const NavigationBar = ({ isModalOpen = false }: NavigationBarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,7 +31,7 @@ const NavigationBar = () => {
   ];
 
   return (
-    <nav className="navigation-bar">
+    <nav className={`navigation-bar ${isModalOpen ? 'modal-open' : ''}`}>
       {navItems.map((item) => {
         const active = isActive(item.path);
         const IconComponent = item.icon;

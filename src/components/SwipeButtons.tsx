@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CloseIcon, HeartIcon } from './icons';
 import './SwipeButtons.css';
 
@@ -12,22 +13,42 @@ const SwipeButtons = ({
   onLike, 
   disabled = false 
 }: SwipeButtonsProps) => {
+  const [isLiking, setIsLiking] = useState(false);
+  const [isDisliking, setIsDisliking] = useState(false);
+
+  const handleLike = () => {
+    if (disabled) return;
+    setIsLiking(true);
+    // Animación antes de ejecutar la acción
+    setTimeout(() => {
+      onLike();
+      setTimeout(() => setIsLiking(false), 300);
+    }, 150);
+  };
+
+  const handleDislike = () => {
+    if (disabled) return;
+    setIsDisliking(true);
+    onDislike();
+    setTimeout(() => setIsDisliking(false), 300);
+  };
+
   return (
     <div className="swipe-buttons">
       {/* Botón Dislike */}
       <button
-        onClick={onDislike}
+        onClick={handleDislike}
         disabled={disabled}
-        className="swipe-button dislike-button"
+        className={`swipe-button dislike-button ${isDisliking ? 'swipe-button-animating' : ''}`}
       >
         <CloseIcon size={20} color="#CCCCCC" />
       </button>
 
       {/* Botón Like */}
       <button
-        onClick={onLike}
+        onClick={handleLike}
         disabled={disabled}
-        className="swipe-button like-button"
+        className={`swipe-button like-button ${isLiking ? 'swipe-button-like-animating' : ''}`}
       >
         <HeartIcon size={22} color="#FFFFFF" filled />
       </button>

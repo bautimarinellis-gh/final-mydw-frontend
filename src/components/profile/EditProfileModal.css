@@ -1,0 +1,295 @@
+.edit-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.form-input.error,
+.form-textarea.error {
+  border-color: #C62828;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-char-count {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: right;
+}
+
+.form-error {
+  font-size: 12px;
+  color: #C62828;
+}
+
+.intereses-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.intereses-input-group .form-input {
+  flex: 1;
+}
+
+.add-interes-button {
+  padding: 12px 20px;
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.add-interes-button:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.add-interes-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.intereses-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.interes-chip-edit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: #FFF5F8;
+  border: 1px solid #7a0d26;
+  border-radius: 16px;
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+
+.remove-interes-button {
+  background: none;
+  border: none;
+  color: #7a0d26;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.remove-interes-button:hover {
+  color: var(--color-primary);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.form-button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button {
+  background-color: #F5F5F5;
+  color: var(--color-text-primary);
+}
+
+.cancel-button:hover:not(:disabled) {
+  background-color: #E0E0E0;
+}
+
+.save-button {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.form-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Estilos para el input de archivo */
+.file-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Contenedor del botón de subir archivo */
+.file-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Botón personalizado para subir archivo */
+.file-upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  background-color: #FFFFFF;
+  color: var(--color-text-primary);
+  border: 2px dashed var(--color-border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  font-family: inherit;
+}
+
+.file-upload-button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background-color: #FFF5F8;
+  transform: translateY(-1px);
+}
+
+.file-upload-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.file-upload-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.file-upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.file-upload-text {
+  flex: 1;
+  text-align: left;
+}
+
+.file-upload-hint {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* Contenedor de preview de imagen */
+.profile-image-preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.profile-image-preview {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón para eliminar imagen */
+.remove-image-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #FF4444;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.remove-image-button:hover:not(:disabled) {
+  background-color: #CC0000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 68, 68, 0.3);
+}
+
+.remove-image-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.remove-image-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.remove-image-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+

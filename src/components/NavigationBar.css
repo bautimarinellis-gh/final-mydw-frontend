@@ -11,6 +11,14 @@
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
   z-index: 1000;
   backdrop-filter: blur(10px);
+  transition: opacity 0.3s ease, pointer-events 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.navigation-bar.modal-open {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(100%);
+  visibility: hidden;
 }
 
 .nav-button {

@@ -1,0 +1,36 @@
+.about-me-section {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.about-me-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.about-me-content {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.about-me-empty {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.about-me-icon {
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+

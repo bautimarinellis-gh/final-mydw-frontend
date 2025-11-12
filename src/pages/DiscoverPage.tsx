@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ProfileCard, SwipeButtons, LoadingSpinner, EmptyState, NavigationBar, BackgroundPattern } from '../components';
+import { StudentCard, SwipeButtons, LoadingSpinner, EmptyDiscoverState, NavigationBar, BackgroundPattern } from '../components';
 import { discoverService } from '../services';
 import type { Usuario } from '../types';
 import { getErrorMessage } from '../utils/error';
@@ -10,15 +10,26 @@ const DiscoverPage = () => {
   const [loading, setLoading] = useState(true);
   const [swiping, setSwiping] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [swipeDirection, setSwipeDirection] = useState<'like' | 'dislike' | null>(null);
+  const [noMoreProfiles, setNoMoreProfiles] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Cargar siguiente perfil desde el backend
   const loadNextProfile = async () => {
     try {
       setLoading(true);
       setError(null);
+      setNoMoreProfiles(false);
       
       const response = await discoverService.getNextProfile();
-      setCurrentProfile(response.estudiante);
+      
+      if (response.estudiante) {
+        setCurrentProfile(response.estudiante);
+      } else {
+        setCurrentProfile(null);
+        setNoMoreProfiles(true);
+      }
     } catch (error: unknown) {
       console.error('Error al cargar perfil:', error);
       const errorMessage = getErrorMessage(error, 'No se pudo conectar con el servidor');
@@ -34,13 +45,18 @@ const DiscoverPage = () => {
     loadNextProfile();
   }, []);
 
-  // Manejar swipe
+  // Manejar swipe con animaciones
   const handleSwipe = async (tipo: 'like' | 'dislike') => {
-    if (!currentProfile || swiping) return;
+    if (!currentProfile || swiping || isAnimating) return;
 
     try {
       setSwiping(true);
+      setIsAnimating(true);
+      setSwipeDirection(tipo);
       setError(null);
+      
+      // Esperar a que termine la animación antes de hacer el swipe
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       const response = await discoverService.swipe(currentProfile.id, tipo);
       
@@ -49,23 +65,36 @@ const DiscoverPage = () => {
         alert(`¡Match con ${currentProfile.nombre} ${currentProfile.apellido}! 🎉`);
       }
 
-      // Cargar siguiente perfil sin mostrar loading (mantener perfil actual visible)
+      // Cargar siguiente perfil
       try {
         const nextResponse = await discoverService.getNextProfile();
-        // Solo actualizar cuando el nuevo perfil esté listo
-        setCurrentProfile(nextResponse.estudiante);
-        setLoading(false);
+        
+        if (nextResponse.estudiante) {
+          // Resetear animación y cargar nuevo perfil
+          setIsAnimating(false);
+          setSwipeDirection(null);
+          setCurrentProfile(nextResponse.estudiante);
+        } else {
+          // No hay más perfiles
+          setIsAnimating(false);
+          setSwipeDirection(null);
+          setCurrentProfile(null);
+          setNoMoreProfiles(true);
+        }
       } catch (error: unknown) {
         console.error('Error al cargar perfil:', error);
         const errorMessage = getErrorMessage(error, 'No se pudo conectar con el servidor');
         setError(errorMessage);
+        setIsAnimating(false);
+        setSwipeDirection(null);
         setCurrentProfile(null);
-        setLoading(false);
       }
     } catch (error: unknown) {
       console.error('Error al hacer swipe:', error);
       const errorMessage = getErrorMessage(error, 'Error al procesar tu acción');
       setError(errorMessage);
+      setIsAnimating(false);
+      setSwipeDirection(null);
     } finally {
       setSwiping(false);
     }
@@ -77,12 +106,14 @@ const DiscoverPage = () => {
       
       {/* Header */}
       <div className="discover-header">
-        <h1 className="discover-title">
-          Descubre Estudiantes
-        </h1>
-        <p className="discover-subtitle">
-          Conecta con personas de tu universidad
-        </p>
+        <div className="discover-header-content">
+          <h1 className="discover-title">
+            Descubrí nuevos matches
+          </h1>
+          <p className="discover-subtitle">
+            Conectá con estudiantes de tu universidad.
+          </p>
+        </div>
       </div>
 
       {/* Contenido principal */}
@@ -95,23 +126,29 @@ const DiscoverPage = () => {
           </div>
         )}
 
-        {!loading && !currentProfile && !error && (
-          <EmptyState message="No hay más perfiles disponibles" />
+        {noMoreProfiles && !loading && (
+          <EmptyDiscoverState onReload={loadNextProfile} />
         )}
 
         {currentProfile && (
           <>
-            <ProfileCard usuario={currentProfile} />
+            <StudentCard 
+              key={currentProfile.id}
+              usuario={currentProfile}
+              isAnimating={isAnimating}
+              swipeDirection={swipeDirection}
+              onModalOpenChange={setIsModalOpen}
+            />
             <SwipeButtons
               onDislike={() => handleSwipe('dislike')}
               onLike={() => handleSwipe('like')}
-              disabled={swiping}
+              disabled={swiping || isAnimating}
             />
           </>
         )}
       </div>
 
-      <NavigationBar />
+      <NavigationBar isModalOpen={isModalOpen} />
     </div>
   );
 };

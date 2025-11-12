@@ -7,12 +7,17 @@
 
 .discover-header {
   padding: 20px 20px 16px;
+}
+
+.discover-header-content {
+  max-width: 300px;
+  margin: 0 auto;
   text-align: center;
 }
 
 .discover-title {
   margin: 0 0 6px 0;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: -0.5px;
@@ -20,10 +25,11 @@
 
 .discover-subtitle {
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--color-text-secondary);
   font-weight: 500;
 }
+
 
 .discover-content {
   padding: 0 16px;
@@ -35,7 +41,33 @@
   min-height: 520px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .discover-header {
+    padding: 16px 16px 12px;
+  }
+
+  .discover-header-content {
+    max-width: 100%;
+  }
+
+  .discover-title {
+    font-size: 22px;
+  }
+
+  .discover-subtitle {
+    font-size: 12px;
+  }
+
+  .discover-content {
+    padding: 0 12px;
+    max-width: 100%;
+    min-height: 480px;
+  }
 }
 
 .discover-error {

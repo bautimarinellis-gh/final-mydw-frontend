@@ -1,5 +1,5 @@
 /**
- * Lista de sedes disponibles de la Universidad Adolfo Ibáñez
+ * Lista de sedes disponibles de la Universidad Abierta Interamericana
  */
 export const SEDES = [
   // Buenos Aires

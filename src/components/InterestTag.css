@@ -1,11 +1,17 @@
 .interest-tag {
-  background-color: #4A4A4A;
-  color: #FFFFFF;
-  padding: 4px 8px;
-  border-radius: 10px;
-  font-size: 11px;
+  background-color: #FFF5F8;
+  color: var(--color-text-primary);
+  padding: 6px 12px;
+  border: 1px solid #7a0d26;
+  border-radius: 16px;
+  font-size: 13px;
   font-weight: 500;
   display: inline-block;
-  margin: 2px;
+  transition: transform 0.2s ease;
+  cursor: default;
+}
+
+.interest-tag:hover {
+  transform: scale(1.05);
 }
 

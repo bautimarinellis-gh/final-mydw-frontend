@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { BackgroundPattern, InterestTag, UniversityHeartIcon } from '../components';
 import { authService } from '../services';
 import { CARRERAS } from '../constants/carreras';
@@ -48,6 +48,11 @@ const RegisterPage = () => {
   // Estado para input de interés
   const [interesInput, setInteresInput] = useState('');
   const [interesError, setInteresError] = useState<string | null>(null);
+
+  // Estado para foto de perfil
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+  const [profileImageError, setProfileImageError] = useState<string | null>(null);
 
   // Validar y avanzar al Paso 2
   const handleStep1Submit = (e: React.FormEvent) => {
@@ -130,6 +135,45 @@ const RegisterPage = () => {
     });
   };
 
+  // Manejar cambio de archivo de imagen
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setProfileImage(null);
+      setProfileImagePreview(null);
+      setProfileImageError(null);
+      return;
+    }
+
+    // Validar tipo de archivo
+    const allowedTypes = ['image/png', 'image/svg+xml', 'image/jpeg', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      setProfileImageError('Solo se permiten archivos PNG, SVG y JPG');
+      setProfileImage(null);
+      setProfileImagePreview(null);
+      return;
+    }
+
+    // Validar tamaño (5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+    if (file.size > maxSize) {
+      setProfileImageError('El archivo es demasiado grande. Tamaño máximo: 5MB');
+      setProfileImage(null);
+      setProfileImagePreview(null);
+      return;
+    }
+
+    setProfileImage(file);
+    setProfileImageError(null);
+
+    // Crear preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfileImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Validar y enviar registro
   const handleRegister = async (skipStep2: boolean = false) => {
     setGeneralError(null);
@@ -170,8 +214,25 @@ const RegisterPage = () => {
         intereses: skipStep2 || step2Data.intereses.length === 0 ? undefined : step2Data.intereses.map(i => i.trim()),
       };
 
-      // Enviar al backend
+      // Enviar registro al backend
       await authService.register(registerData);
+
+      // Si hay una imagen seleccionada, subirla después del registro
+      if (profileImage) {
+        try {
+          await authService.uploadProfileImage(profileImage);
+        } catch (imageError) {
+          console.error('Error al subir imagen de perfil:', imageError);
+          // No bloquear el registro si falla la subida de imagen
+          // Solo mostrar un mensaje de advertencia
+          const errorMessage = getErrorMessage(imageError, 'Error al subir la imagen de perfil');
+          setGeneralError(`Registro exitoso, pero ${errorMessage.toLowerCase()}. Puedes subir tu foto más tarde.`);
+          setTimeout(() => {
+            navigate('/login');
+          }, 3000);
+          return;
+        }
+      }
 
       // Redirigir a login
       navigate('/login');
@@ -392,6 +453,14 @@ const RegisterPage = () => {
             >
               Continuar
             </button>
+
+            {/* Link a Login */}
+            <div className="register-login-link">
+              <span className="register-login-text">¿Ya tienes cuenta?</span>
+              <Link to="/login" className="register-login-button">
+                Inicia sesión
+              </Link>
+            </div>
           </form>
         )}
 
@@ -401,10 +470,69 @@ const RegisterPage = () => {
             <div className="register-heart-icon">
               <UniversityHeartIcon size={48} />
             </div>
-            <h1 className="register-title">Completa tu Perfil</h1>
+            <h1 className="register-title">Completá tu Perfil</h1>
             <p className="register-subtitle">
-              Agrega información opcional sobre ti
+              Agregá información opcional sobre ti
             </p>
+
+            {/* Foto de perfil */}
+            <div className="register-field">
+              <label htmlFor="profileImage" className="register-label">
+                Foto de perfil
+              </label>
+              <input
+                id="profileImage"
+                type="file"
+                accept="image/png,image/svg+xml,image/jpeg,image/jpg"
+                onChange={handleImageChange}
+                disabled={loading}
+                className="register-file-input"
+              />
+              {profileImageError && (
+                <span className="register-error">{profileImageError}</span>
+              )}
+              {profileImagePreview && (
+                <div className="register-image-preview">
+                  <img 
+                    src={profileImagePreview} 
+                    alt="Preview" 
+                    style={{ 
+                      maxWidth: '200px', 
+                      maxHeight: '200px',
+                      borderRadius: '8px',
+                      marginTop: '8px'
+                    }} 
+                  />
+                  {profileImage && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileImage(null);
+                        setProfileImagePreview(null);
+                        setProfileImageError(null);
+                        // Resetear el input file
+                        const fileInput = document.getElementById('profileImage') as HTMLInputElement;
+                        if (fileInput) {
+                          fileInput.value = '';
+                        }
+                      }}
+                      className="register-remove-image"
+                      style={{
+                        marginTop: '8px',
+                        padding: '4px 8px',
+                        backgroundColor: '#ff4444',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Eliminar imagen
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Descripción */}
             <div className="register-field">
@@ -509,6 +637,14 @@ const RegisterPage = () => {
               >
                 {loading ? 'Guardando...' : 'Guardar y finalizar'}
               </button>
+            </div>
+
+            {/* Link a Login */}
+            <div className="register-login-link">
+              <span className="register-login-text">¿Ya tienes cuenta?</span>
+              <Link to="/login" className="register-login-button">
+                Inicia sesión
+              </Link>
             </div>
           </div>
         )}

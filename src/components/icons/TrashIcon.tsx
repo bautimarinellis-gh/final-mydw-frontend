@@ -1,9 +1,10 @@
 interface IconProps {
   size?: number;
+  color?: string;
   className?: string;
 }
 
-const UniversityHeartIcon = ({ size = 48, className = "" }: IconProps) => {
+const TrashIcon = ({ size = 24, color = "currentColor", className = "" }: IconProps) => {
   return (
     <svg
       width={size}
@@ -13,15 +14,13 @@ const UniversityHeartIcon = ({ size = 48, className = "" }: IconProps) => {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Gorra universitaria */}
       <path
-        d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
-        fill="var(--color-primary)"
+        d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM8 9H16V19H8V9ZM15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5Z"
+        fill={color}
       />
-      
     </svg>
   );
 };
 
-export default UniversityHeartIcon;
+export default TrashIcon;
 

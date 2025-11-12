@@ -20,6 +20,7 @@ export interface RegisterRequest {
 export interface AuthResponse {
   message: string;
   accessToken: string;
+  refreshToken?: string;
   user: Usuario;
 }
 
