@@ -1,0 +1,49 @@
+.discover-page {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  padding-bottom: 80px;
+  position: relative;
+}
+
+.discover-header {
+  padding: 20px 20px 16px;
+  text-align: center;
+}
+
+.discover-title {
+  margin: 0 0 6px 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.5px;
+}
+
+.discover-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.discover-content {
+  padding: 0 16px;
+  max-width: 300px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+  padding-bottom: 24px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.discover-error {
+  background-color: #FFEBEE;
+  color: #C62828;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+

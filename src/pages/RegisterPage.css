@@ -1,0 +1,328 @@
+.register-page {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  padding: 20px 16px 40px;
+  position: relative;
+}
+
+.register-container {
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* Indicador de paso */
+.register-step-indicator {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.register-step-text {
+  display: inline-block;
+  padding: 6px 16px;
+  background-color: var(--color-white);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+/* Formulario */
+.register-form {
+  background-color: var(--color-white);
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 2px 12px var(--color-shadow);
+}
+
+.register-heart-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.register-title {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.register-subtitle {
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Campos del formulario */
+.register-field {
+  margin-bottom: 20px;
+}
+
+.register-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.register-input,
+.register-select,
+.register-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.register-input:focus,
+.register-select:focus,
+.register-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+}
+
+.register-input-error,
+.register-select.register-input-error {
+  border-color: #C62828;
+}
+
+.register-input-error:focus,
+.register-select.register-input-error:focus {
+  border-color: #C62828;
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+}
+
+.register-textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.register-char-count {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  text-align: right;
+}
+
+/* Errores */
+.register-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #C62828;
+}
+
+.register-error-general {
+  background-color: #FFEBEE;
+  color: #C62828;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.register-info {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+/* Botones */
+.register-button-primary {
+  width: 100%;
+  padding: 14px 24px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.register-button-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 21, 56, 0.3);
+}
+
+.register-button-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.register-button-secondary {
+  padding: 12px 24px;
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.register-button-secondary:hover:not(:disabled) {
+  background-color: var(--color-background);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.register-button-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.register-buttons .register-button-primary {
+  flex: 1;
+  min-width: 140px;
+  margin-top: 0;
+}
+
+.register-buttons .register-button-secondary {
+  flex: 1;
+  min-width: 100px;
+}
+
+/* Intereses */
+.register-intereses-input-container {
+  display: flex;
+  gap: 8px;
+}
+
+.register-intereses-input-container .register-input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.register-button-add {
+  padding: 12px 20px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.register-button-add:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.register-button-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register-intereses-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.register-interes-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.register-interes-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #C62828;
+  color: var(--color-white);
+  border: 2px solid var(--color-white);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.register-interes-remove:hover:not(:disabled) {
+  background-color: #B71C1C;
+  transform: scale(1.1);
+}
+
+.register-interes-remove:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register-page {
+    padding: 16px 12px 32px;
+  }
+
+  .register-form {
+    padding: 20px 16px;
+  }
+
+  .register-title {
+    font-size: 24px;
+  }
+
+  .register-buttons {
+    flex-direction: column;
+  }
+
+  .register-buttons .register-button-primary,
+  .register-buttons .register-button-secondary {
+    width: 100%;
+    flex: none;
+  }
+
+  .register-intereses-input-container {
+    flex-direction: column;
+  }
+
+  .register-button-add {
+    width: 100%;
+  }
+}
+

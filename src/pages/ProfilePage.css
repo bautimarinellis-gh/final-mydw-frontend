@@ -1,0 +1,128 @@
+.profile-page {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 80px;
+}
+
+.profile-header {
+  background-color: #FFFFFF;
+  padding: 40px 20px;
+  border-bottom: 1px solid #E0E0E0;
+  text-align: center;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #FFFFFF;
+  font-weight: bold;
+  margin: 0 auto 16px;
+}
+
+.profile-header-name {
+  margin: 0 0 4px 0;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+
+.profile-header-age {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+}
+
+.profile-main {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.profile-section {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.profile-section-title {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.profile-section-content {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  font-weight: 500;
+}
+
+.profile-section-content-normal {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.profile-intereses-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-logout-button {
+  width: 100%;
+  padding: 16px;
+  background-color: #8B0000;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.2s ease;
+}
+
+.profile-logout-button:hover {
+  background-color: #A52A2A;
+}
+
+.profile-error-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 80px;
+}
+
+.profile-error-content {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.profile-error-message {
+  color: #C62828;
+  font-size: 16px;
+}
+
+.profile-error-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background-color: #8B0000;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+

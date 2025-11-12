@@ -1,0 +1,102 @@
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.pattern-icon {
+  position: absolute;
+  animation: float 20s ease-in-out infinite;
+}
+
+/* Libros */
+.book-1 {
+  top: 10%;
+  left: 8%;
+  animation-delay: 0s;
+}
+
+.book-2 {
+  top: 25%;
+  right: 12%;
+  animation-delay: 3s;
+}
+
+.book-3 {
+  bottom: 30%;
+  left: 15%;
+  animation-delay: 6s;
+}
+
+/* Corazones */
+.heart-1 {
+  top: 15%;
+  right: 20%;
+  animation-delay: 2s;
+}
+
+.heart-2 {
+  bottom: 20%;
+  right: 10%;
+  animation-delay: 5s;
+}
+
+.heart-3 {
+  top: 60%;
+  left: 10%;
+  animation-delay: 8s;
+}
+
+/* Tazas */
+.coffee-1 {
+  top: 40%;
+  right: 8%;
+  animation-delay: 4s;
+}
+
+.coffee-2 {
+  bottom: 15%;
+  left: 20%;
+  animation-delay: 7s;
+}
+
+/* Birretes */
+.cap-1 {
+  top: 70%;
+  right: 15%;
+  animation-delay: 1s;
+}
+
+.cap-2 {
+  bottom: 40%;
+  right: 25%;
+  animation-delay: 9s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(10px) rotate(-2deg);
+  }
+}
+
+/* Ocultar en móviles pequeños para mejor rendimiento */
+@media (max-width: 768px) {
+  .pattern-icon {
+    animation: none;
+  }
+}
+
