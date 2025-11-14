@@ -66,10 +66,13 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // Si el error es 401 y no es una petición de refresh ni ya se intentó refrescar
+    // También excluir login y register, ya que estos errores deben mostrarse directamente
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes('/api/auth/refresh')
+      !originalRequest.url?.includes('/api/auth/refresh') &&
+      !originalRequest.url?.includes('/api/auth/login') &&
+      !originalRequest.url?.includes('/api/auth/register')
     ) {
       if (isRefreshing) {
         // Si ya se está refrescando, esperar en la cola

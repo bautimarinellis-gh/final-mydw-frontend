@@ -75,22 +75,18 @@ const ProfilePage = () => {
 
   // Manejar actualización de perfil
   const handleUpdateProfile = async (updatedData: Partial<Usuario>) => {
-    console.log('handleUpdateProfile llamado con:', updatedData);
     if (!user) {
       throw new Error('No hay usuario para actualizar');
     }
     
     try {
       const updatedUser = await authService.updateProfile(updatedData);
-      console.log('Usuario actualizado recibido:', updatedUser);
       setUser(updatedUser);
-      console.log('Estado actualizado');
       
       // Recargar el usuario desde el backend para asegurar que tenemos la versión más actualizada
       // Esto es especialmente importante si se subió una imagen
       const refreshedUser = await authService.getCurrentUser();
       setUser(refreshedUser);
-      console.log('Usuario recargado desde el backend');
     } catch (error: unknown) {
       console.error('Error al actualizar perfil:', error);
       

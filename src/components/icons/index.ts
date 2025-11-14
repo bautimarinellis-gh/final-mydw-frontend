@@ -14,4 +14,8 @@ export { default as SearchIcon } from './SearchIcon';
 export { default as BrokenHeartIcon } from './BrokenHeartIcon';
 export { default as CameraIcon } from './CameraIcon';
 export { default as TrashIcon } from './TrashIcon';
+export { default as SparkleIcon } from './SparkleIcon';
+export { default as ArrowLeftIcon } from './ArrowLeftIcon';
+export { default as ArrowRightIcon } from './ArrowRightIcon';
+export { default as CelebrationIcon } from './CelebrationIcon';
 

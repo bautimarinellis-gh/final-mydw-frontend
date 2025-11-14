@@ -23,6 +23,26 @@
   }
 }
 
+/* Ícono de estrella brillante */
+.sparkle-icon {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 2px;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 0.8;
+  }
+}
+
 .empty-discover-title {
   margin: 0 0 12px 0;
   font-size: 22px;
@@ -40,16 +60,38 @@
 }
 
 .empty-discover-reload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 12px 32px;
   background-color: var(--color-primary);
   color: var(--color-white);
   border: none;
-  border-radius: 12px;
+  border-radius: 9999px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(139, 21, 56, 0.25);
+}
+
+.reload-icon {
+  animation: rotate 2s linear infinite;
+  animation-play-state: paused;
+}
+
+.empty-discover-reload-button:hover .reload-icon {
+  animation-play-state: running;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-discover-reload-button:hover {

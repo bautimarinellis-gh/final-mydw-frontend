@@ -61,22 +61,12 @@
   font-weight: bold;
   margin-bottom: 16px;
   overflow: hidden;
-  animation: avatarPulse 2s ease-in-out infinite;
 }
 
 .profile-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-@keyframes avatarPulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
 }
 
 .profile-greeting {
@@ -233,6 +223,17 @@
 
   .profile-cta-button {
     flex: 1;
+  }
+}
+
+/* Responsive: Mobile */
+@media (max-width: 768px) {
+  .profile-content {
+    padding: 16px;
+  }
+
+  .profile-card-container {
+    max-width: 100%;
   }
 }
 

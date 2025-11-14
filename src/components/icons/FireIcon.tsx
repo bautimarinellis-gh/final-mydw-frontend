@@ -1,11 +1,10 @@
 interface IconProps {
   size?: number;
   color?: string;
-  filled?: boolean;
   className?: string;
 }
 
-const FireIcon = ({ size = 24, color = "currentColor", filled = false, className = "" }: IconProps) => {
+const FireIcon = ({ size = 24, color = "currentColor", className = "" }: IconProps) => {
   return (
     <svg
       width={size}

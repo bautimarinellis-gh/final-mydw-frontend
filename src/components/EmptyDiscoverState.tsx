@@ -7,56 +7,46 @@ interface EmptyDiscoverStateProps {
 const EmptyDiscoverState = ({ onReload }: EmptyDiscoverStateProps) => {
   return (
     <div className="empty-discover-state">
-      {/* Ilustración SVG - Birrete dormido */}
+      {/* Ilustración SVG - Favicon */}
       <div className="empty-discover-illustration">
         <svg
           width="120"
           height="120"
-          viewBox="0 0 120 120"
+          viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Birrete */}
+          {/* Favicon - Birrete */}
           <path
-            d="M30 40 L60 20 L90 40 L90 50 L30 50 Z"
+            d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
             fill="#8B1538"
-            opacity="0.8"
-          />
-          {/* Pompon */}
-          <circle cx="60" cy="20" r="8" fill="#C72C5B" />
-          {/* Zzz (sueño) */}
-          <path
-            d="M95 35 Q100 30 105 35"
-            stroke="#8B1538"
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
-          />
-          <path
-            d="M100 30 Q105 25 110 30"
-            stroke="#8B1538"
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
-          />
-          <path
-            d="M105 25 Q110 20 115 25"
-            stroke="#8B1538"
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
           />
         </svg>
       </div>
 
       {/* Texto principal */}
       <h2 className="empty-discover-title">
-        Ya viste a todos por ahora 👀
+        ¡Ya viste a todos por ahora{' '}
+        <span className="sparkle-icon">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 2 L11.5 7.5 L17 9 L11.5 10.5 L10 16 L8.5 10.5 L3 9 L8.5 7.5 Z"
+              fill="#C72C5B"
+            />
+          </svg>
+        </span>
+        !
       </h2>
 
       {/* Subtexto */}
       <p className="empty-discover-subtitle">
-        Volvé más tarde para descubrir más estudiantes.
+        Volvé pronto, nuevos estudiantes te esperan.
       </p>
 
       {/* Botón Recargar */}
@@ -64,6 +54,29 @@ const EmptyDiscoverState = ({ onReload }: EmptyDiscoverStateProps) => {
         className="empty-discover-reload-button"
         onClick={onReload}
       >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 18 18"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="reload-icon"
+        >
+          <path
+            d="M9 2 C5.13 2 2 5.13 2 9 C2 12.87 5.13 16 9 16 C12.87 16 16 12.87 16 9"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M12 5 L16 2 L16 6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         Recargar
       </button>
     </div>

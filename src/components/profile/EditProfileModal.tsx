@@ -121,11 +121,9 @@ const EditProfileModal = ({ isOpen, onClose, user, onSave }: EditProfileModalPro
     // Si hay una imagen nueva, subirla primero
     if (profileImage) {
       try {
-        const uploadResult = await authService.uploadProfileImage(profileImage);
-        console.log('Imagen subida exitosamente:', uploadResult);
+        await authService.uploadProfileImage(profileImage);
         // Recargar el usuario desde el backend para asegurar que tenemos la versión más actualizada
-        const updatedUser = await authService.getCurrentUser();
-        console.log('Usuario recargado después de subir imagen:', updatedUser);
+        await authService.getCurrentUser();
       } catch (imageError) {
         console.error('Error al subir imagen:', imageError);
         setErrors({ 
@@ -165,9 +163,7 @@ const EditProfileModal = ({ isOpen, onClose, user, onSave }: EditProfileModalPro
     }
 
     try {
-      console.log('Guardando datos:', data);
       await onSave(data);
-      console.log('Perfil actualizado exitosamente');
       
       // Recargar el usuario desde el backend para asegurar que tenemos la versión más actualizada
       await authService.getCurrentUser();

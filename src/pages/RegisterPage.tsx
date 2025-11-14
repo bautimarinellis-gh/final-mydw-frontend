@@ -480,14 +480,32 @@ const RegisterPage = () => {
               <label htmlFor="profileImage" className="register-label">
                 Foto de perfil
               </label>
-              <input
-                id="profileImage"
-                type="file"
-                accept="image/png,image/svg+xml,image/jpeg,image/jpg"
-                onChange={handleImageChange}
-                disabled={loading}
-                className="register-file-input"
-              />
+              <div className="register-file-upload-container">
+                <input
+                  id="profileImage"
+                  type="file"
+                  accept="image/png,image/svg+xml,image/jpeg,image/jpg"
+                  onChange={handleImageChange}
+                  disabled={loading}
+                  className="register-file-input"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fileInput = document.getElementById('profileImage') as HTMLInputElement;
+                    if (fileInput) {
+                      fileInput.click();
+                    }
+                  }}
+                  className="register-file-button"
+                  disabled={loading}
+                >
+                  Seleccionar archivo
+                </button>
+                <span className="register-file-name">
+                  {profileImage ? profileImage.name : 'Ningún archivo seleccionado'}
+                </span>
+              </div>
               {profileImageError && (
                 <span className="register-error">{profileImageError}</span>
               )}
@@ -496,12 +514,7 @@ const RegisterPage = () => {
                   <img 
                     src={profileImagePreview} 
                     alt="Preview" 
-                    style={{ 
-                      maxWidth: '200px', 
-                      maxHeight: '200px',
-                      borderRadius: '8px',
-                      marginTop: '8px'
-                    }} 
+                    className="register-image-preview-img"
                   />
                   {profileImage && (
                     <button
@@ -517,15 +530,6 @@ const RegisterPage = () => {
                         }
                       }}
                       className="register-remove-image"
-                      style={{
-                        marginTop: '8px',
-                        padding: '4px 8px',
-                        backgroundColor: '#ff4444',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                      }}
                     >
                       Eliminar imagen
                     </button>

@@ -10,7 +10,7 @@ interface SwipeButtonsProps {
 
 const SwipeButtons = ({ 
   onDislike, 
-  onLike, 
+  onLike,
   disabled = false 
 }: SwipeButtonsProps) => {
   const [isLiking, setIsLiking] = useState(false);

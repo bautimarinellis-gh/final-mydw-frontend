@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { NavigationBar, LoadingSpinner, EmptyState, InterestTag } from '../components';
+import { motion } from 'framer-motion';
+import { NavigationBar, LoadingSpinner, BackgroundPattern, MatchCard, HeartIcon } from '../components';
 import { discoverService } from '../services';
 import type { Match } from '../types';
 import './MatchesPage.css';
@@ -8,6 +9,7 @@ const MatchesPage = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [openModalId, setOpenModalId] = useState<string | null>(null);
 
   // Cargar matches desde el backend
   useEffect(() => {
@@ -30,18 +32,42 @@ const MatchesPage = () => {
     loadMatches();
   }, []);
 
-  // Obtener iniciales para foto
-  const getInitials = (nombre: string, apellido: string) => {
-    return `${nombre[0]}${apellido[0]}`.toUpperCase();
+  // Variantes de animación para el contenedor
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
   };
 
   return (
     <div className="matches-page">
+      <BackgroundPattern />
+      
       {/* Header */}
       <div className="matches-header">
-        <h1 className="matches-title">
-          Matches
-        </h1>
+        <div className="matches-header-content">
+          <h1 className="matches-title">
+            Tus Conexiones
+          </h1>
+          
+          {loading ? (
+            <p className="matches-subtitle">Cargando...</p>
+          ) : matches.length > 0 ? (
+            <p className="matches-subtitle">
+              Tenés {matches.length} {matches.length === 1 ? 'nuevo match' : 'nuevos matches'} listos para chatear
+            </p>
+          ) : (
+            <p className="matches-subtitle">
+              Todavía no hay conexiones… pero nunca es tarde
+            </p>
+          )}
+          
+        </div>
       </div>
 
       {/* Contenido */}
@@ -55,63 +81,41 @@ const MatchesPage = () => {
         )}
 
         {!loading && matches.length === 0 && (
-          <EmptyState message="Aún no tienes matches. ¡Sigue descubriendo!" />
+          <div className="matches-empty">
+            <div className="matches-empty-icon">
+              <HeartIcon size={64} color="var(--color-text-tertiary)" filled={false} />
+            </div>
+            <h2 className="matches-empty-title">No hay matches aún</h2>
+            <p className="matches-empty-text">
+              Seguí descubriendo perfiles para encontrar tu próxima conexión
+            </p>
+          </div>
         )}
 
         {!loading && matches.length > 0 && (
-          <div className="matches-grid">
-            {matches.map((match) => (
-              <div key={match.id} className="match-card">
-                {/* Foto de perfil */}
-                <div className="match-photo">
-                  {getInitials(match.estudiante.nombre, match.estudiante.apellido)}
-                </div>
-
-                {/* Información */}
-                <div className="match-info">
-                  <h3 className="match-name">
-                    {match.estudiante.nombre} {match.estudiante.apellido}
-                    <span className="match-age">
-                      , {match.estudiante.edad}
-                    </span>
-                  </h3>
-
-                  <p className="match-carrera">
-                    {match.estudiante.carrera}
-                  </p>
-
-                  <p className="match-sede">
-                    {match.estudiante.sede}
-                  </p>
-
-                  {match.estudiante.intereses && match.estudiante.intereses.length > 0 && (
-                    <div className="match-intereses">
-                      {match.estudiante.intereses.slice(0, 3).map((interes, index) => (
-                        <InterestTag key={index} interest={interes} />
-                      ))}
-                      {match.estudiante.intereses.length > 3 && (
-                        <span className="match-more-intereses">
-                          +{match.estudiante.intereses.length - 3} más
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Icono de chat */}
-                <div className="match-chat-icon">
-                  💬
-                </div>
-              </div>
+          <motion.div
+            className="matches-grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {matches.map((match, index) => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                index={index}
+                onModalOpenChange={(isOpen) => {
+                  setOpenModalId(isOpen ? match.id : null);
+                }}
+              />
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
 
-      <NavigationBar />
+      <NavigationBar isModalOpen={openModalId !== null} />
     </div>
   );
 };
 
 export default MatchesPage;
-

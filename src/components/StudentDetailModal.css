@@ -128,3 +128,15 @@
   box-shadow: 0 2px 8px rgba(139, 21, 56, 0.25);
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+  .student-detail-photo {
+    width: 130px;
+    height: 130px;
+  }
+
+  .student-detail-initials {
+    font-size: 56px;
+  }
+}
+

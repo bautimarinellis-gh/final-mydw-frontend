@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
-import { StudentCard, SwipeButtons, LoadingSpinner, EmptyDiscoverState, NavigationBar, BackgroundPattern } from '../components';
-import { discoverService } from '../services';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { StudentCard, SwipeButtons, LoadingSpinner, EmptyDiscoverState, NavigationBar, BackgroundPattern, ArrowLeftIcon, ArrowRightIcon, MatchModal } from '../components';
+import { discoverService, authService } from '../services';
 import type { Usuario } from '../types';
 import { getErrorMessage } from '../utils/error';
+import axios from 'axios';
 import './DiscoverPage.css';
 
 const DiscoverPage = () => {
@@ -14,19 +15,78 @@ const DiscoverPage = () => {
   const [swipeDirection, setSwipeDirection] = useState<'like' | 'dislike' | null>(null);
   const [noMoreProfiles, setNoMoreProfiles] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [profileHistory, setProfileHistory] = useState<Usuario[]>([]); // Historial de perfiles vistos
+  const [historyIndex, setHistoryIndex] = useState<number>(-1); // Índice actual en el historial (-1 = perfil nuevo)
+  const [showMatchModal, setShowMatchModal] = useState(false);
+  const [matchedUserName, setMatchedUserName] = useState('');
+  const maxRetriesRef = useRef(0);
+  const MAX_RETRIES = 10; // Máximo de intentos para evitar loops infinitos
+
+  // Obtener ID del usuario actual
+  useEffect(() => {
+    const user = authService.getLocalUser();
+    if (user?.id) {
+      setCurrentUserId(user.id);
+    } else {
+      // Si no está en localStorage, obtenerlo del backend
+      authService.getCurrentUser()
+        .then(user => {
+          if (user?.id) {
+            setCurrentUserId(user.id);
+          }
+        })
+        .catch(err => {
+          console.error('Error al obtener usuario actual:', err);
+        });
+    }
+  }, []);
+
+  // Validar que el perfil no sea del usuario actual
+  // NOTA: La validación de likes/dislikes previos debe estar implementada en el backend
+  // Esta es solo una capa de seguridad adicional en el frontend
+  const isValidProfile = (profile: Usuario | null): boolean => {
+    if (!profile || !currentUserId) return true; // Si no hay perfil o no hay usuario actual, permitir
+    return profile.id !== currentUserId;
+  };
 
   // Cargar siguiente perfil desde el backend
-  const loadNextProfile = async () => {
+  // El backend debe filtrar:
+  // 1. El propio perfil del usuario
+  // 2. Perfiles a los que ya se les dio "like"
+  // 3. Perfiles que ya fueron rechazados (dislike)
+  const loadNextProfile = useCallback(async (retryCount: number = 0) => {
     try {
       setLoading(true);
       setError(null);
       setNoMoreProfiles(false);
       
+      // Si hemos intentado muchas veces, evitar loop infinito
+      if (retryCount >= MAX_RETRIES) {
+        console.error('Máximo de reintentos alcanzado. El backend puede estar devolviendo el mismo perfil.');
+        setCurrentProfile(null);
+        setNoMoreProfiles(true);
+        setLoading(false);
+        return;
+      }
+      
       const response = await discoverService.getNextProfile();
       
       if (response.estudiante) {
+        // Validar que no sea el propio perfil del usuario
+        if (!isValidProfile(response.estudiante)) {
+          // Intentar obtener otro perfil
+          maxRetriesRef.current = retryCount + 1;
+          await loadNextProfile(retryCount + 1);
+          return;
+        }
+        
+        // Si es válido, establecer el perfil
+        maxRetriesRef.current = 0; // Resetear contador
         setCurrentProfile(response.estudiante);
+        setNoMoreProfiles(false); // Asegurar que noMoreProfiles esté en false cuando hay perfil
       } else {
+        // No hay más perfiles disponibles (ya se interactuó con todos o no hay usuarios)
         setCurrentProfile(null);
         setNoMoreProfiles(true);
       }
@@ -38,12 +98,54 @@ const DiscoverPage = () => {
     } finally {
       setLoading(false);
     }
+  }, [currentUserId]);
+
+  // Cargar perfil inicial cuando se tenga el ID del usuario actual
+  useEffect(() => {
+    // Esperar a que se cargue el ID del usuario actual antes de cargar perfiles
+    // Esto asegura que la validación de "no mostrar propio perfil" funcione correctamente
+    if (currentUserId !== null) {
+      loadNextProfile();
+    }
+  }, [currentUserId, loadNextProfile]);
+
+  // Manejar skip con flecha derecha (guardar en historial y avanzar)
+  const handleSkip = () => {
+    if (!currentProfile || swiping || isAnimating) return;
+
+    // Si estamos en un perfil nuevo (no en el historial), agregarlo al historial
+    if (historyIndex === -1 && currentProfile) {
+      setProfileHistory(prev => [...prev, currentProfile]);
+    }
+
+    // Cargar siguiente perfil
+    loadNextProfile(0);
+    setHistoryIndex(-1); // Resetear a perfil nuevo
   };
 
-  // Cargar perfil inicial
-  useEffect(() => {
-    loadNextProfile();
-  }, []);
+  // Navegar hacia atrás con flecha izquierda (volver al perfil anterior)
+  const handleNavigateBack = () => {
+    if (swiping || isAnimating) return;
+
+    // Si estamos en un perfil nuevo (historyIndex === -1), ir al último del historial
+    if (historyIndex === -1) {
+      if (profileHistory.length > 0) {
+        const newIndex = profileHistory.length - 1;
+        setHistoryIndex(newIndex);
+        setCurrentProfile(profileHistory[newIndex]);
+        setNoMoreProfiles(false);
+      }
+      return;
+    }
+
+    // Si estamos en el historial, ir al anterior
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setCurrentProfile(profileHistory[newIndex]);
+      setNoMoreProfiles(false);
+    }
+  };
 
   // Manejar swipe con animaciones
   const handleSwipe = async (tipo: 'like' | 'dislike') => {
@@ -60,27 +162,25 @@ const DiscoverPage = () => {
       
       const response = await discoverService.swipe(currentProfile.id, tipo);
       
-      // Si hay match, mostrar notificación
+      // Si hay match, mostrar modal
       if (response.match) {
-        alert(`¡Match con ${currentProfile.nombre} ${currentProfile.apellido}! 🎉`);
+        setMatchedUserName(`${currentProfile.nombre} ${currentProfile.apellido}`);
+        setShowMatchModal(true);
+      }
+
+      // Si estábamos navegando en el historial, remover el perfil del historial
+      if (historyIndex >= 0) {
+        setProfileHistory(prev => prev.filter((_, idx) => idx !== historyIndex));
+        setHistoryIndex(-1);
       }
 
       // Cargar siguiente perfil
       try {
-        const nextResponse = await discoverService.getNextProfile();
-        
-        if (nextResponse.estudiante) {
-          // Resetear animación y cargar nuevo perfil
-          setIsAnimating(false);
-          setSwipeDirection(null);
-          setCurrentProfile(nextResponse.estudiante);
-        } else {
-          // No hay más perfiles
-          setIsAnimating(false);
-          setSwipeDirection(null);
-          setCurrentProfile(null);
-          setNoMoreProfiles(true);
-        }
+        // Usar loadNextProfile que ya tiene la validación incorporada
+        await loadNextProfile(0);
+        // Resetear animación después de cargar el perfil
+        setIsAnimating(false);
+        setSwipeDirection(null);
       } catch (error: unknown) {
         console.error('Error al cargar perfil:', error);
         const errorMessage = getErrorMessage(error, 'No se pudo conectar con el servidor');
@@ -91,10 +191,34 @@ const DiscoverPage = () => {
       }
     } catch (error: unknown) {
       console.error('Error al hacer swipe:', error);
-      const errorMessage = getErrorMessage(error, 'Error al procesar tu acción');
-      setError(errorMessage);
-      setIsAnimating(false);
-      setSwipeDirection(null);
+      
+      // Si el error es 409 (conflict), significa que ya se interactuó con este usuario
+      // En este caso, ocultar el perfil actual y cargar el siguiente
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        // Si estábamos navegando en el historial, remover el perfil del historial
+        if (historyIndex >= 0) {
+          setProfileHistory(prev => prev.filter((_, idx) => idx !== historyIndex));
+          setHistoryIndex(-1);
+        }
+        
+        // Ocultar el perfil actual y cargar el siguiente
+        try {
+          await loadNextProfile(0);
+          setIsAnimating(false);
+          setSwipeDirection(null);
+        } catch (loadError: unknown) {
+          console.error('Error al cargar siguiente perfil después de 409:', loadError);
+          setIsAnimating(false);
+          setSwipeDirection(null);
+          setCurrentProfile(null);
+        }
+      } else {
+        // Para otros errores, mostrar el mensaje de error
+        const errorMessage = getErrorMessage(error, 'Error al procesar tu acción');
+        setError(errorMessage);
+        setIsAnimating(false);
+        setSwipeDirection(null);
+      }
     } finally {
       setSwiping(false);
     }
@@ -132,13 +256,41 @@ const DiscoverPage = () => {
 
         {currentProfile && (
           <>
-            <StudentCard 
-              key={currentProfile.id}
-              usuario={currentProfile}
-              isAnimating={isAnimating}
-              swipeDirection={swipeDirection}
-              onModalOpenChange={setIsModalOpen}
-            />
+            <div className="discover-card-container">
+              {/* Botón Navegar Atrás */}
+              <button
+                onClick={handleNavigateBack}
+                disabled={swiping || isAnimating || (historyIndex === -1 && profileHistory.length === 0) || (historyIndex >= 0 && historyIndex === 0)}
+                className="discover-nav-button discover-nav-button-left"
+                title="Perfil anterior"
+              >
+                <ArrowLeftIcon 
+                  size={22} 
+                  color="currentColor"
+                />
+              </button>
+
+              <StudentCard 
+                key={currentProfile.id}
+                usuario={currentProfile}
+                isAnimating={isAnimating}
+                swipeDirection={swipeDirection}
+                onModalOpenChange={setIsModalOpen}
+              />
+
+              {/* Botón Skip (Flecha Derecha) */}
+              <button
+                onClick={handleSkip}
+                disabled={swiping || isAnimating}
+                className="discover-nav-button discover-nav-button-right"
+                title="Skipear estudiante"
+              >
+                <ArrowRightIcon 
+                  size={22} 
+                  color="currentColor"
+                />
+              </button>
+            </div>
             <SwipeButtons
               onDislike={() => handleSwipe('dislike')}
               onLike={() => handleSwipe('like')}
@@ -148,7 +300,14 @@ const DiscoverPage = () => {
         )}
       </div>
 
-      <NavigationBar isModalOpen={isModalOpen} />
+      <NavigationBar isModalOpen={isModalOpen || showMatchModal} />
+      
+      {/* Modal de Match */}
+      <MatchModal 
+        isOpen={showMatchModal}
+        onClose={() => setShowMatchModal(false)}
+        matchName={matchedUserName}
+      />
     </div>
   );
 };

@@ -10,6 +10,26 @@ export const getErrorMessage = (error: unknown, fallback: string): string => {
       return 'Este email ya está registrado';
     }
 
+    // Manejar error 401 (Unauthorized) - Credenciales incorrectas o usuario no existe
+    if (error.response?.status === 401) {
+      const responseMessage = error.response?.data?.message;
+      
+      // Si el mensaje contiene "refresh token", es un error del interceptor que no debería mostrarse
+      // en el contexto de login/register
+      if (typeof responseMessage === 'string' && 
+          responseMessage.toLowerCase().includes('refresh token')) {
+        return 'Credenciales incorrectas. Verifica tu email y contraseña.';
+      }
+      
+      // Si hay un mensaje del backend, usarlo
+      if (typeof responseMessage === 'string' && responseMessage.trim().length > 0) {
+        return responseMessage;
+      }
+      
+      // Mensaje por defecto para 401
+      return 'Credenciales incorrectas. Verifica tu email y contraseña.';
+    }
+
     const responseMessage = error.response?.data?.message;
 
     if (typeof responseMessage === 'string' && responseMessage.trim().length > 0) {

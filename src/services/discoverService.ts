@@ -17,9 +17,6 @@ const mapFotoPerfilToFotoUrl = (user: Usuario | Record<string, unknown>): Usuari
   
   if (imageField && !userWithFotoPerfil.fotoUrl) {
     userWithFotoPerfil.fotoUrl = imageField;
-    console.log('mapFotoPerfilToFotoUrl - Mapeado campo de imagen a fotoUrl:', userWithFotoPerfil.fotoUrl);
-  } else if (!imageField && !userWithFotoPerfil.fotoUrl) {
-    console.log('mapFotoPerfilToFotoUrl - No se encontró ningún campo de imagen');
   }
   
   return userWithFotoPerfil as Usuario;
@@ -30,25 +27,9 @@ export const discoverService = {
   getNextProfile: async (): Promise<NextProfileResponse> => {
     const response = await api.get<NextProfileResponse>('/api/discover/next');
     
-    console.log('getNextProfile - Respuesta completa del backend:', JSON.stringify(response.data, null, 2));
-    
     // Mapear fotoPerfil a fotoUrl si existe
     if (response.data.estudiante) {
-      console.log('getNextProfile - Estudiante antes del mapeo:', JSON.stringify(response.data.estudiante, null, 2));
-      console.log('getNextProfile - Campos del estudiante:', Object.keys(response.data.estudiante));
-      
-      // Verificar todos los campos posibles relacionados con foto
-      const estudiante = response.data.estudiante as unknown as Record<string, unknown>;
-      console.log('getNextProfile - Todos los campos del estudiante:');
-      Object.keys(estudiante).forEach(key => {
-        console.log(`  ${key}:`, estudiante[key]);
-      });
-      
       response.data.estudiante = mapFotoPerfilToFotoUrl(response.data.estudiante);
-      console.log('getNextProfile - Estudiante después del mapeo:', JSON.stringify(response.data.estudiante, null, 2));
-      console.log('getNextProfile - fotoUrl final:', response.data.estudiante.fotoUrl);
-    } else {
-      console.log('getNextProfile - No hay estudiante en la respuesta');
     }
     
     return response.data;

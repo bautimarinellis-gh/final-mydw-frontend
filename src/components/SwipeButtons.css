@@ -2,10 +2,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   margin-top: 16px;
   margin-bottom: 8px;
   min-height: 48px;
+  flex-wrap: wrap;
 }
 
 .swipe-button {
@@ -110,27 +111,43 @@
   transform: scale(0.95);
 }
 
+/* Botón Skip */
+.skip-button {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--color-border);
+  background-color: var(--color-white);
+  flex-shrink: 0;
+}
+
+.skip-button:not(:disabled):hover {
+  border-color: var(--color-text-secondary);
+  background-color: #FAFAFA;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.skip-button:not(:disabled):active {
+  background-color: #F5F5F5;
+  transform: scale(0.95);
+}
+
+
 /* Mobile optimizations */
 @media (max-width: 480px) {
   .swipe-buttons {
-    gap: 24px; /* gap-6 equivalente */
+    gap: 16px;
     margin-top: 20px;
   }
 
   .dislike-button,
-  .like-button {
+  .like-button,
+  .skip-button {
     width: 56px;
     height: 56px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  .dislike-button:not(:disabled):active,
-  .like-button:not(:disabled):active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  .dislike-button svg {
+  .dislike-button svg,
+  .skip-button svg {
     width: 24px;
     height: 24px;
   }

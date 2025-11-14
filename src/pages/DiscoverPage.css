@@ -32,13 +32,13 @@
 
 
 .discover-content {
-  padding: 0 16px;
-  max-width: 300px;
+  padding: 0 80px;
+  max-width: 500px;
   margin: 0 auto;
   position: relative;
   z-index: 10;
   padding-bottom: 24px;
-  min-height: 520px;
+  min-height: 480px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -46,27 +46,10 @@
 }
 
 /* Mobile optimizations */
-@media (max-width: 480px) {
-  .discover-header {
-    padding: 16px 16px 12px;
-  }
-
-  .discover-header-content {
-    max-width: 100%;
-  }
-
-  .discover-title {
-    font-size: 22px;
-  }
-
-  .discover-subtitle {
-    font-size: 12px;
-  }
-
+@media (max-width: 768px) {
   .discover-content {
-    padding: 0 12px;
+    padding: 0 70px;
     max-width: 100%;
-    min-height: 480px;
   }
 }
 
@@ -78,4 +61,60 @@
   margin-bottom: 20px;
   text-align: center;
 }
+
+/* Contenedor de card con flechas de navegación */
+.discover-card-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* Botones de navegación a los lados de la card */
+.discover-nav-button {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  background-color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(139, 21, 56, 0.15);
+  z-index: 20;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.discover-nav-button-left {
+  left: -60px;
+}
+
+.discover-nav-button-right {
+  right: -60px;
+}
+
+.discover-nav-button:not(:disabled):hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: 0 4px 12px rgba(139, 21, 56, 0.25);
+}
+
+.discover-nav-button:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+.discover-nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: var(--color-border);
+  color: var(--color-text-tertiary);
+}
+
 

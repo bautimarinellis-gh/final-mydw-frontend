@@ -96,11 +96,7 @@ export const authService = {
     const userData = response.data.user as any;
     if (userData.fotoPerfil && !userData.fotoUrl) {
       userData.fotoUrl = userData.fotoPerfil;
-      console.log('getCurrentUser - Mapeado fotoPerfil a fotoUrl:', userData.fotoUrl);
     }
-    
-    console.log('getCurrentUser - Usuario recibido:', userData);
-    console.log('getCurrentUser - fotoUrl:', userData.fotoUrl);
     
     try {
       localStorage.setItem(USER_KEY, JSON.stringify(userData));
@@ -138,9 +134,7 @@ export const authService = {
 
   // Actualizar perfil del usuario
   updateProfile: async (profileData: Partial<Usuario>): Promise<Usuario> => {
-    console.log('Enviando datos al backend:', profileData);
     const response = await api.patch<{ user: Usuario }>('/api/auth/profile', profileData);
-    console.log('Respuesta del backend:', response.data);
     
     // Manejar diferentes estructuras de respuesta
     const updatedUser = (response.data.user || response.data) as any;
@@ -152,11 +146,7 @@ export const authService = {
     // Si el backend devuelve fotoPerfil pero el frontend espera fotoUrl, mapear
     if (updatedUser.fotoPerfil && !updatedUser.fotoUrl) {
       updatedUser.fotoUrl = updatedUser.fotoPerfil;
-      console.log('updateProfile - Mapeado fotoPerfil a fotoUrl:', updatedUser.fotoUrl);
     }
-    
-    console.log('updateProfile - Usuario actualizado:', updatedUser);
-    console.log('updateProfile - fotoUrl:', updatedUser.fotoUrl);
     
     try {
       localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
@@ -195,16 +185,10 @@ export const authService = {
         },
       });
 
-      console.log('Respuesta completa del backend:', response.data);
-      console.log('Usuario recibido:', response.data.user);
-      console.log('fotoUrl del usuario:', response.data.user.fotoUrl);
-      console.log('imageUrl recibido:', response.data.imageUrl);
-
       // Si el backend devuelve fotoPerfil pero el frontend espera fotoUrl, mapear
       const userData = response.data.user as any;
       if (userData.fotoPerfil && !userData.fotoUrl) {
         userData.fotoUrl = userData.fotoPerfil;
-        console.log('Mapeado fotoPerfil a fotoUrl:', userData.fotoUrl);
       }
 
       // Actualizar usuario en localStorage
