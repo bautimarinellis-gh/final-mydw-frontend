@@ -26,26 +26,29 @@
 /* Indicador de paso */
 .register-step-indicator {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .register-step-text {
   display: inline-block;
-  padding: 6px 16px;
-  background-color: var(--color-white);
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
-  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  padding: 10px 24px;
+  background-color: var(--color-primary);
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFFFFF;
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 2px 8px rgba(139, 21, 56, 0.25);
+  transition: all 0.25s ease;
+  letter-spacing: 0.3px;
 }
 
 /* Mejor contraste del indicador en modo oscuro */
 [data-theme="dark"] .register-step-text {
-  background-color: #1F1F1F;
+  background-color: var(--color-primary);
   border-color: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: #FFFFFF;
+  box-shadow: 0 2px 12px rgba(139, 21, 56, 0.4), 0 0 20px rgba(139, 21, 56, 0.3);
 }
 
 /* Formulario */
