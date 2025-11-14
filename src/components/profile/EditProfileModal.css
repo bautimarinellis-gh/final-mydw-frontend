@@ -80,7 +80,7 @@
 .add-interes-button {
   padding: 12px 20px;
   background-color: var(--color-primary);
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -92,6 +92,11 @@
 
 .add-interes-button:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
+}
+
+/* Asegurar texto blanco en modo oscuro */
+[data-theme="dark"] .add-interes-button {
+  color: #FFFFFF !important;
 }
 
 .add-interes-button:disabled {
@@ -172,19 +177,26 @@
 
 [data-theme="dark"] .cancel-button {
   background-color: var(--color-disabled);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 [data-theme="dark"] .cancel-button:hover:not(:disabled) {
   background-color: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
 }
 
 .save-button {
   background-color: var(--color-primary);
-  color: #FFFFFF;
+  color: #FFFFFF !important;
 }
 
 .save-button:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
+}
+
+/* Asegurar texto blanco en modo oscuro */
+[data-theme="dark"] .save-button {
+  color: #FFFFFF !important;
 }
 
 .form-button:disabled {
@@ -250,11 +262,13 @@
 [data-theme="dark"] .file-upload-button {
   background-color: var(--color-white);
   border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 [data-theme="dark"] .file-upload-button:hover:not(:disabled) {
   background-color: rgba(199, 44, 91, 0.1);
   border-color: var(--color-primary);
+  color: #FFFFFF !important;
 }
 
 .file-upload-icon {

@@ -232,6 +232,10 @@
 }
 
 /* Glow difuminado en hover para botones principales en modo oscuro */
+[data-theme="dark"] .register-button-primary {
+  color: #FFFFFF;
+}
+
 [data-theme="dark"] .register-button-primary:hover:not(:disabled) {
   box-shadow: 0 4px 16px rgba(139, 21, 56, 0.4), 0 0 20px rgba(139, 21, 56, 0.2);
 }
