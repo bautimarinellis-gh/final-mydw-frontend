@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import { ThemeContext } from './ThemeContext';
 
 type Theme = 'light' | 'dark';
 
 const THEME_STORAGE_KEY = 'tinder-uai-theme';
 
-export const useTheme = () => {
-  // Obtener tema inicial desde localStorage o usar 'light' por defecto
-  const getInitialTheme = (): Theme => {
-    if (typeof window !== 'undefined') {
-      const storedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme;
-      if (storedTheme === 'light' || storedTheme === 'dark') {
-        return storedTheme;
-      }
+// Obtener tema inicial desde localStorage o usar 'light' por defecto
+const getInitialTheme = (): Theme => {
+  if (typeof window !== 'undefined') {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme;
+    if (storedTheme === 'light' || storedTheme === 'dark') {
+      return storedTheme;
     }
-    return 'light';
-  };
+  }
+  return 'light';
+};
 
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<Theme>(() => {
     // Inicializar tema y aplicarlo inmediatamente al DOM
     const initialTheme = getInitialTheme();
@@ -24,7 +26,7 @@ export const useTheme = () => {
     }
     return initialTheme;
   });
-  
+
   const isDark = theme === 'dark';
 
   // Aplicar tema al elemento raíz del documento cuando cambia
@@ -38,10 +40,10 @@ export const useTheme = () => {
     setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
-  return {
-    theme,
-    toggleTheme,
-    isDark,
-  };
+  return (
+    <ThemeContext.Provider value={{ theme, isDark, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 };
 

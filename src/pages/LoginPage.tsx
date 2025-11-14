@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BackgroundPattern, EyeIcon, EyeOffIcon, UniversityHeartIcon, ThemeToggle } from '../components';
-import { authService } from '../services';
+import { useAuth } from '../contexts';
 import { validateEmail, validatePassword } from '../utils/validation';
 import { getErrorMessage } from '../utils/error';
 import type { LoginRequest } from '../types';
@@ -9,6 +9,7 @@ import './LoginPage.css';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -67,8 +68,8 @@ const LoginPage = () => {
         password: formData.password,
       };
 
-      // Enviar al backend
-      await authService.login(credentials);
+      // Enviar al backend usando el contexto
+      await login(credentials);
 
       // Redirigir a discover
       navigate('/discover');

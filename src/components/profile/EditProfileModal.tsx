@@ -3,6 +3,7 @@ import { z, type ZodIssue } from 'zod';
 import Modal from '../Modal';
 import { profileUpdateSchema, validateUniqueInterests } from '../../validators/profile';
 import { authService } from '../../services';
+import { useAuth } from '../../contexts';
 import { getProfileImageUrl } from '../../utils/image';
 import type { Usuario } from '../../types';
 import { CameraIcon, TrashIcon } from '../icons';
@@ -16,6 +17,7 @@ interface EditProfileModalProps {
 }
 
 const EditProfileModal = ({ isOpen, onClose, user, onSave }: EditProfileModalProps) => {
+  const { refreshUser } = useAuth();
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
   const [descripcion, setDescripcion] = useState(user.descripcion || '');
@@ -122,8 +124,8 @@ const EditProfileModal = ({ isOpen, onClose, user, onSave }: EditProfileModalPro
     if (profileImage) {
       try {
         await authService.uploadProfileImage(profileImage);
-        // Recargar el usuario desde el backend para asegurar que tenemos la versión más actualizada
-        await authService.getCurrentUser();
+        // Recargar el usuario desde el contexto para actualizar la imagen
+        await refreshUser();
       } catch (imageError) {
         console.error('Error al subir imagen:', imageError);
         setErrors({ 
@@ -165,8 +167,8 @@ const EditProfileModal = ({ isOpen, onClose, user, onSave }: EditProfileModalPro
     try {
       await onSave(data);
       
-      // Recargar el usuario desde el backend para asegurar que tenemos la versión más actualizada
-      await authService.getCurrentUser();
+      // El parent (ProfilePage) ya maneja el refresh del usuario
+      // No necesitamos llamar a refreshUser aquí
       
       onClose();
     } catch (error) {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BackgroundPattern, InterestTag, UniversityHeartIcon, ThemeToggle } from '../components';
 import { authService } from '../services';
+import { useAuth } from '../contexts';
 import { CARRERAS } from '../constants/carreras';
 import { SEDES } from '../constants/sedes';
 import {
@@ -21,6 +22,7 @@ import './RegisterPage.css';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
@@ -214,8 +216,8 @@ const RegisterPage = () => {
         intereses: skipStep2 || step2Data.intereses.length === 0 ? undefined : step2Data.intereses.map(i => i.trim()),
       };
 
-      // Enviar registro al backend
-      await authService.register(registerData);
+      // Enviar registro al backend usando el contexto
+      await register(registerData);
 
       // Si hay una imagen seleccionada, subirla después del registro
       if (profileImage) {

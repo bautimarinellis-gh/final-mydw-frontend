@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { NavigationBar, LoadingSpinner, BackgroundPattern, LocationIcon, GraduationIcon, AboutMe, Interests, EditProfileModal, BrokenHeartIcon, ConfirmModal, ThemeToggle } from '../components';
-import { authService } from '../services';
+import { useAuth } from '../contexts';
 import type { Usuario } from '../types';
 import { getErrorMessage } from '../utils/error';
 import { getProfileImageUrl } from '../utils/image';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
-  const [user, setUser] = useState<Usuario | null>(null);
+  const { user, logout, refreshUser, updateUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -21,26 +21,18 @@ const ProfilePage = () => {
       setLoading(true);
       setError(null);
       
-      // Obtener usuario del backend
-      const userData = await authService.getCurrentUser();
-      setUser(userData);
+      // Obtener usuario desde el contexto (ya sincronizado con el backend)
+      await refreshUser();
     } catch (error: unknown) {
       console.error('Error al cargar usuario:', error);
-      
-      // Intentar obtener de localStorage como fallback
-      const localUser = authService.getLocalUser();
-      if (localUser) {
-        setUser(localUser);
-      } else {
-        const errorMessage = getErrorMessage(error, 'No se pudo cargar tu perfil');
-        setError(errorMessage);
-      }
+      const errorMessage = getErrorMessage(error, 'No se pudo cargar tu perfil');
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  // Cargar información del usuario desde el backend
+  // Cargar información del usuario al montar el componente
   useEffect(() => {
     loadUser();
   }, []);
@@ -58,7 +50,7 @@ const ProfilePage = () => {
   // Manejar logout
   const handleLogout = async () => {
     try {
-      await authService.logout();
+      await logout();
       navigate('/login');
     } catch (err) {
       console.error('Error al cerrar sesión:', err);
@@ -80,13 +72,12 @@ const ProfilePage = () => {
     }
     
     try {
-      const updatedUser = await authService.updateProfile(updatedData);
-      setUser(updatedUser);
+      // Actualizar perfil usando el contexto (ya sincroniza con el backend)
+      await updateUser(updatedData);
       
       // Recargar el usuario desde el backend para asegurar que tenemos la versión más actualizada
       // Esto es especialmente importante si se subió una imagen
-      const refreshedUser = await authService.getCurrentUser();
-      setUser(refreshedUser);
+      await refreshUser();
     } catch (error: unknown) {
       console.error('Error al actualizar perfil:', error);
       

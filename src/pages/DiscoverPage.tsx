@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { StudentCard, SwipeButtons, LoadingSpinner, EmptyDiscoverState, NavigationBar, BackgroundPattern, ArrowLeftIcon, ArrowRightIcon, MatchModal, ThemeToggle } from '../components';
-import { discoverService, authService } from '../services';
+import { discoverService } from '../services';
+import { useAuth } from '../contexts';
 import type { Usuario } from '../types';
 import { getErrorMessage } from '../utils/error';
 import axios from 'axios';
 import './DiscoverPage.css';
 
 const DiscoverPage = () => {
+  const { user: currentUser } = useAuth();
   const [currentProfile, setCurrentProfile] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
   const [swiping, setSwiping] = useState(false);
@@ -15,7 +17,6 @@ const DiscoverPage = () => {
   const [swipeDirection, setSwipeDirection] = useState<'like' | 'dislike' | null>(null);
   const [noMoreProfiles, setNoMoreProfiles] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [profileHistory, setProfileHistory] = useState<Usuario[]>([]); // Historial de perfiles vistos
   const [historyIndex, setHistoryIndex] = useState<number>(-1); // Índice actual en el historial (-1 = perfil nuevo)
   const [showMatchModal, setShowMatchModal] = useState(false);
@@ -23,24 +24,8 @@ const DiscoverPage = () => {
   const maxRetriesRef = useRef(0);
   const MAX_RETRIES = 10; // Máximo de intentos para evitar loops infinitos
 
-  // Obtener ID del usuario actual
-  useEffect(() => {
-    const user = authService.getLocalUser();
-    if (user?.id) {
-      setCurrentUserId(user.id);
-    } else {
-      // Si no está en localStorage, obtenerlo del backend
-      authService.getCurrentUser()
-        .then(user => {
-          if (user?.id) {
-            setCurrentUserId(user.id);
-          }
-        })
-        .catch(err => {
-          console.error('Error al obtener usuario actual:', err);
-        });
-    }
-  }, []);
+  // ID del usuario actual desde el contexto
+  const currentUserId = currentUser?.id || null;
 
   // Validar que el perfil no sea del usuario actual
   // NOTA: La validación de likes/dislikes previos debe estar implementada en el backend
