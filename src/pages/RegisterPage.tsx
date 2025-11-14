@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { BackgroundPattern, InterestTag, UniversityHeartIcon } from '../components';
+import { BackgroundPattern, InterestTag, UniversityHeartIcon, ThemeToggle } from '../components';
 import { authService } from '../services';
 import { CARRERAS } from '../constants/carreras';
 import { SEDES } from '../constants/sedes';
@@ -280,6 +280,7 @@ const RegisterPage = () => {
   return (
     <div className="register-page">
       <BackgroundPattern />
+      <ThemeToggle />
 
       <div className="register-container">
         {/* Indicador de paso */}

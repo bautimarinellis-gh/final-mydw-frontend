@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { NavigationBar, LoadingSpinner, BackgroundPattern, LocationIcon, GraduationIcon, AboutMe, Interests, EditProfileModal, BrokenHeartIcon, ConfirmModal } from '../components';
+import { NavigationBar, LoadingSpinner, BackgroundPattern, LocationIcon, GraduationIcon, AboutMe, Interests, EditProfileModal, BrokenHeartIcon, ConfirmModal, ThemeToggle } from '../components';
 import { authService } from '../services';
 import type { Usuario } from '../types';
 import { getErrorMessage } from '../utils/error';
@@ -128,6 +128,7 @@ const ProfilePage = () => {
     return (
       <div className="profile-page">
         <BackgroundPattern />
+        <ThemeToggle />
         <div className="profile-content">
           <LoadingSpinner />
         </div>
@@ -140,6 +141,7 @@ const ProfilePage = () => {
     return (
       <div className="profile-page">
         <BackgroundPattern />
+        <ThemeToggle />
         <div className="profile-error-container">
           <div className="profile-error-content">
             <p className="profile-error-message">
@@ -158,6 +160,7 @@ const ProfilePage = () => {
   return (
     <div className="profile-page">
       <BackgroundPattern />
+      <ThemeToggle />
       
       <div className="profile-content">
         <div className="profile-card-container">
@@ -180,7 +183,7 @@ const ProfilePage = () => {
             {/* Sede */}
             <div className="profile-data-item">
               <div className="profile-data-icon">
-                <LocationIcon size={24} />
+                <LocationIcon size={20} />
               </div>
               <div className="profile-data-content">
                 <span className="profile-data-label">Sede</span>
@@ -191,7 +194,7 @@ const ProfilePage = () => {
             {/* Carrera */}
             <div className="profile-data-item">
               <div className="profile-data-icon">
-                <GraduationIcon size={24} />
+                <GraduationIcon size={20} />
               </div>
               <div className="profile-data-content">
                 <span className="profile-data-label">Carrera</span>
@@ -224,7 +227,7 @@ const ProfilePage = () => {
 
           {/* Botón secundario: Cerrar sesión */}
           <button onClick={() => setIsLogoutModalOpen(true)} className="profile-logout-button">
-            <BrokenHeartIcon size={18} />
+            <BrokenHeartIcon size={16} />
             <span>Cerrar sesión</span>
           </button>
         </div>

@@ -14,6 +14,7 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text-primary);
+  transition: color 0.25s ease;
 }
 
 .form-input,
@@ -24,7 +25,9 @@
   border-radius: 8px;
   font-size: 14px;
   font-family: inherit;
-  transition: border-color 0.2s ease;
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  transition: border-color 0.2s ease, background-color 0.25s ease, color 0.25s ease;
 }
 
 .form-input:focus,
@@ -38,6 +41,11 @@
   border-color: #C62828;
 }
 
+[data-theme="dark"] .form-input.error,
+[data-theme="dark"] .form-textarea.error {
+  border-color: #FF5252;
+}
+
 .form-textarea {
   resize: vertical;
   min-height: 100px;
@@ -47,11 +55,17 @@
   font-size: 12px;
   color: var(--color-text-secondary);
   text-align: right;
+  transition: color 0.25s ease;
 }
 
 .form-error {
   font-size: 12px;
   color: #C62828;
+  transition: color 0.25s ease;
+}
+
+[data-theme="dark"] .form-error {
+  color: #FF5252;
 }
 
 .intereses-input-group {
@@ -72,7 +86,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.25s ease, transform 0.2s ease;
   white-space: nowrap;
 }
 
@@ -97,17 +111,22 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background-color: #FFF5F8;
-  border: 1px solid #7a0d26;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-primary);
   border-radius: 16px;
   font-size: 13px;
   color: var(--color-text-primary);
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+[data-theme="dark"] .interes-chip-edit {
+  background-color: var(--color-surface-elevated);
 }
 
 .remove-interes-button {
   background: none;
   border: none;
-  color: #7a0d26;
+  color: var(--color-primary);
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
@@ -117,11 +136,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease;
+  transition: color 0.25s ease, transform 0.2s ease;
 }
 
 .remove-interes-button:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-hover);
+  transform: scale(1.1);
 }
 
 .form-actions {
@@ -138,16 +158,24 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, background-color 0.25s ease, color 0.25s ease;
 }
 
 .cancel-button {
-  background-color: #F5F5F5;
+  background-color: var(--color-disabled);
   color: var(--color-text-primary);
 }
 
 .cancel-button:hover:not(:disabled) {
-  background-color: #E0E0E0;
+  background-color: var(--color-inactive);
+}
+
+[data-theme="dark"] .cancel-button {
+  background-color: var(--color-disabled);
+}
+
+[data-theme="dark"] .cancel-button:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .save-button {
@@ -191,21 +219,21 @@
   justify-content: center;
   gap: 10px;
   padding: 14px 20px;
-  background-color: #FFFFFF;
+  background-color: var(--color-white);
   color: var(--color-text-primary);
   border: 2px dashed var(--color-border);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
   width: 100%;
   font-family: inherit;
 }
 
 .file-upload-button:hover:not(:disabled) {
   border-color: var(--color-primary);
-  background-color: #FFF5F8;
+  background-color: rgba(139, 21, 56, 0.05);
   transform: translateY(-1px);
 }
 
@@ -216,6 +244,17 @@
 .file-upload-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .file-upload-button {
+  background-color: var(--color-white);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .file-upload-button:hover:not(:disabled) {
+  background-color: rgba(199, 44, 91, 0.1);
+  border-color: var(--color-primary);
 }
 
 .file-upload-icon {
@@ -234,6 +273,7 @@
   font-size: 12px;
   color: var(--color-text-secondary);
   text-align: center;
+  transition: color 0.25s ease;
 }
 
 /* Contenedor de preview de imagen */
@@ -243,6 +283,16 @@
   align-items: flex-start;
   gap: 12px;
   margin-top: 12px;
+  padding: 12px;
+  background-color: var(--color-white);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+[data-theme="dark"] .profile-image-preview-container {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .profile-image-preview {
@@ -251,6 +301,11 @@
   border-radius: 8px;
   object-fit: cover;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.25s ease;
+}
+
+[data-theme="dark"] .profile-image-preview {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* Botón para eliminar imagen */
@@ -260,21 +315,21 @@
   justify-content: center;
   gap: 8px;
   padding: 10px 16px;
-  background-color: #FF4444;
+  background-color: #DC3545;
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, background-color 0.25s ease;
   font-family: inherit;
 }
 
 .remove-image-button:hover:not(:disabled) {
-  background-color: #CC0000;
+  background-color: #C82333;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(255, 68, 68, 0.3);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
 }
 
 .remove-image-button:active:not(:disabled) {
@@ -284,6 +339,16 @@
 .remove-image-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .remove-image-button {
+  background-color: #FF5252;
+}
+
+[data-theme="dark"] .remove-image-button:hover:not(:disabled) {
+  background-color: #FF6B6B;
+  box-shadow: 0 4px 8px rgba(255, 82, 82, 0.3);
 }
 
 .remove-image-icon {

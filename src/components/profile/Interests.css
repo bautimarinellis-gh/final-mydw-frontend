@@ -1,15 +1,16 @@
 .interests-section {
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .interests-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #999;
+  color: var(--color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  transition: color 0.25s ease;
 }
 
 .interests-chips {

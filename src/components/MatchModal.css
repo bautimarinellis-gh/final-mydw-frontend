@@ -32,6 +32,21 @@
   align-items: center;
   text-align: center;
   position: relative;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .match-modal-content {
+  background: linear-gradient(
+    135deg,
+    #1A1A1A 0%,
+    #1F1F1F 50%,
+    #252525 100%
+  );
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 0 40px rgba(139, 21, 56, 0.15);
 }
 
 /* Contenedor de iconos */
@@ -60,6 +75,7 @@
   position: relative;
   z-index: 1;
   color: var(--color-secondary);
+  transition: color 0.25s ease;
 }
 
 /* Título */
@@ -69,6 +85,7 @@
   color: var(--color-text-primary);
   margin: 0 0 12px 0;
   letter-spacing: -0.3px;
+  transition: color 0.25s ease;
 }
 
 /* Mensaje */
@@ -77,11 +94,18 @@
   color: var(--color-text-secondary);
   margin: 0 0 28px 0;
   line-height: 1.6;
+  transition: color 0.25s ease;
 }
 
 .match-modal-message strong {
   color: var(--color-primary);
   font-weight: 600;
+  transition: color 0.25s ease;
+}
+
+/* Mejor contraste en modo oscuro */
+[data-theme="dark"] .match-modal-message strong {
+  color: var(--color-primary-100);
 }
 
 /* Botón */
@@ -94,26 +118,33 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, background-color 0.25s ease;
   box-shadow: 
-    0 4px 12px rgba(255, 71, 87, 0.25),
+    0 4px 12px rgba(139, 21, 56, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   width: 100%;
   max-width: 200px;
 }
 
 .match-modal-button:hover {
-  background: #ff6b7a;
+  background: var(--color-primary-hover);
   box-shadow: 
-    0 6px 16px rgba(255, 71, 87, 0.4),
+    0 6px 16px rgba(139, 21, 56, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
   transform: translateY(-1px);
+}
+
+[data-theme="dark"] .match-modal-button:hover {
+  box-shadow: 
+    0 6px 16px rgba(139, 21, 56, 0.5),
+    0 0 20px rgba(139, 21, 56, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset;
 }
 
 .match-modal-button:active {
   transform: translateY(1px);
   box-shadow: 
-    0 2px 8px rgba(255, 71, 87, 0.25),
+    0 2px 8px rgba(139, 21, 56, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 

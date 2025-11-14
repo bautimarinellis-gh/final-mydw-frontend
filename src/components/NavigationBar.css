@@ -3,7 +3,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: var(--color-white);
+  background-color: var(--color-surface-elevated);
   border-top: 1px solid var(--color-border);
   display: flex;
   justify-content: space-around;
@@ -11,7 +11,7 @@
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
   z-index: 1000;
   backdrop-filter: blur(10px);
-  transition: opacity 0.3s ease, pointer-events 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.3s ease, pointer-events 0.3s ease, transform 0.3s ease, visibility 0.3s ease, background-color 0.25s ease;
 }
 
 .navigation-bar.modal-open {
@@ -77,6 +77,7 @@
 .nav-label {
   font-size: 11px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #999999;
 }
 
 .nav-label.active {
@@ -87,5 +88,26 @@
 .nav-label.inactive {
   font-weight: 400;
   color: #999999;
+}
+
+/* Modo oscuro: labels e íconos blancos */
+[data-theme="dark"] .nav-label.inactive {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .nav-label.active {
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .nav-icon.inactive {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="dark"] .nav-icon.active {
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .navigation-bar {
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
 }
 

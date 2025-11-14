@@ -298,8 +298,9 @@
   bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #ff4444;
-  color: white;
+  background-color: #DC3545;
+  color: #FFFFFF;
+  transition: background-color 0.25s ease, color 0.25s ease;
   padding: 12px 20px;
   border-radius: 8px;
   font-size: 14px;

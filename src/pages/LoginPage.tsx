@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { BackgroundPattern, EyeIcon, EyeOffIcon, UniversityHeartIcon } from '../components';
+import { BackgroundPattern, EyeIcon, EyeOffIcon, UniversityHeartIcon, ThemeToggle } from '../components';
 import { authService } from '../services';
 import { validateEmail, validatePassword } from '../utils/validation';
 import { getErrorMessage } from '../utils/error';
@@ -95,6 +95,7 @@ const LoginPage = () => {
   return (
     <div className="login-page">
       <BackgroundPattern />
+      <ThemeToggle />
 
       <div className="login-container">
         <form className="login-form" onSubmit={handleSubmit}>

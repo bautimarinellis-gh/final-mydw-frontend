@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { StudentCard, SwipeButtons, LoadingSpinner, EmptyDiscoverState, NavigationBar, BackgroundPattern, ArrowLeftIcon, ArrowRightIcon, MatchModal } from '../components';
+import { StudentCard, SwipeButtons, LoadingSpinner, EmptyDiscoverState, NavigationBar, BackgroundPattern, ArrowLeftIcon, ArrowRightIcon, MatchModal, ThemeToggle } from '../components';
 import { discoverService, authService } from '../services';
 import type { Usuario } from '../types';
 import { getErrorMessage } from '../utils/error';
@@ -227,6 +227,7 @@ const DiscoverPage = () => {
   return (
     <div className="discover-page">
       <BackgroundPattern />
+      <ThemeToggle />
       
       {/* Header */}
       <div className="discover-header">

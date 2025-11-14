@@ -1,17 +1,24 @@
 .interest-tag {
-  background-color: #FFF5F8;
+  background-color: var(--color-white);
   color: var(--color-text-primary);
   padding: 6px 12px;
-  border: 1px solid #7a0d26;
+  border: 1px solid var(--color-primary);
   border-radius: 16px;
   font-size: 13px;
   font-weight: 500;
   display: inline-block;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
   cursor: default;
 }
 
 .interest-tag:hover {
   transform: scale(1.05);
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .interest-tag {
+  background-color: rgba(199, 44, 91, 0.15);
+  border-color: #C72C5B;
+  color: #EDEDED;
 }
 

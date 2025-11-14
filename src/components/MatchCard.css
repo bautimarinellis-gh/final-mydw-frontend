@@ -4,12 +4,12 @@
   box-shadow: 0 4px 16px var(--color-shadow);
   overflow: hidden;
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, background-color 0.25s ease, box-shadow 0.25s ease;
   cursor: pointer;
 }
 
 .match-card:hover {
-  box-shadow: 0 8px 24px rgba(139, 21, 56, 0.15);
+  box-shadow: 0 8px 24px var(--color-shadow);
   transform: translateY(-4px);
 }
 
@@ -19,7 +19,7 @@
   top: 12px;
   right: 12px;
   background-color: var(--color-primary);
-  color: var(--color-white);
+  color: #FFFFFF;
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 11px;
@@ -28,7 +28,8 @@
   align-items: center;
   gap: 4px;
   z-index: 20;
-  box-shadow: 0 2px 8px rgba(139, 21, 56, 0.3);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* Foto de perfil */
@@ -38,8 +39,7 @@
   background: linear-gradient(
     135deg,
     var(--color-primary) 0%,
-    rgba(139, 21, 56, 0.85) 40%,
-    rgba(220, 20, 60, 0.9) 70%,
+    var(--color-primary-hover) 50%,
     var(--color-secondary) 100%
   );
   display: flex;
@@ -47,6 +47,7 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
+  transition: background 0.25s ease;
 }
 
 .match-card-image {
@@ -57,7 +58,7 @@
 
 .match-card-initials {
   font-size: 48px;
-  color: var(--color-white);
+  color: #FFFFFF;
   font-weight: 700;
   letter-spacing: 2px;
 }
@@ -71,9 +72,8 @@
   bottom: 0;
   background: linear-gradient(
     180deg,
-    rgba(139, 21, 56, 0) 0%,
-    rgba(139, 21, 56, 0.2) 60%,
-    rgba(139, 21, 56, 0.5) 100%
+    transparent 0%,
+    var(--color-primary-70) 100%
   );
   backdrop-filter: blur(2px);
   display: flex;
@@ -81,7 +81,7 @@
   justify-content: center;
   padding: 16px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, background 0.25s ease;
   z-index: 10;
 }
 
@@ -107,19 +107,32 @@
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, background-color 0.25s ease, color 0.25s ease;
   font-family: inherit;
 }
 
 .match-card-button-primary {
-  background-color: var(--color-white);
+  background-color: #FFFFFF;
   color: var(--color-primary);
 }
 
 .match-card-button-primary:hover {
   background-color: var(--color-primary);
-  color: var(--color-white);
+  color: #FFFFFF;
   transform: scale(1.05);
+}
+
+/* Botón primario en modo oscuro */
+[data-theme="dark"] .match-card-button-primary {
+  background-color: rgba(255, 255, 255, 0.95);
+  color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .match-card-button-primary:hover {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(139, 21, 56, 0.5), 0 0 16px rgba(139, 21, 56, 0.3);
 }
 
 .match-card-button-secondary {
@@ -129,14 +142,29 @@
 }
 
 .match-card-button-secondary:hover {
-  background-color: var(--color-white);
+  background-color: #FFFFFF;
   transform: scale(1.05);
+}
+
+/* Botón secundario en modo oscuro */
+[data-theme="dark"] .match-card-button-secondary {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .match-card-button-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
 }
 
 /* Información */
 .match-card-info {
   padding: 16px;
   background-color: var(--color-white);
+  transition: background-color 0.25s ease;
 }
 
 .match-card-name {
@@ -145,6 +173,7 @@
   font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: -0.3px;
+  transition: color 0.25s ease;
 }
 
 .match-card-carrera {
@@ -152,6 +181,12 @@
   font-size: 13px;
   color: var(--color-primary);
   font-weight: 600;
+  transition: color 0.25s ease;
+}
+
+/* Mejor contraste en modo oscuro */
+[data-theme="dark"] .match-card-carrera {
+  color: var(--color-primary-100);
 }
 
 .match-card-sede {
@@ -159,6 +194,7 @@
   font-size: 12px;
   color: var(--color-text-tertiary);
   font-weight: 500;
+  transition: color 0.25s ease;
 }
 
 /* Responsive */

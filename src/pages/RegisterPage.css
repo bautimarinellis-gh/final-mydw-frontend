@@ -3,10 +3,21 @@
   background-color: var(--color-background);
   padding: 20px 16px 40px;
   position: relative;
+  transition: background-color 0.25s ease, background-image 0.25s ease, color 0.25s ease;
+}
+
+/* Gradiente radial para modo claro - crea foco visual en el formulario */
+.register-page {
+  background: radial-gradient(ellipse at center, #FFFFFF 0%, #F9F9F9 50%, #F7F7F7 100%);
+}
+
+/* Gradiente radial para modo oscuro - crea foco visual en el formulario */
+[data-theme="dark"] .register-page {
+  background: radial-gradient(ellipse at center, #181818 0%, #0C0C0C 70%, #000000 100%);
 }
 
 .register-container {
-  max-width: 500px;
+  max-width: 420px;
   margin: 0 auto;
   position: relative;
   z-index: 10;
@@ -27,14 +38,30 @@
   font-weight: 600;
   color: var(--color-primary);
   border: 1px solid var(--color-primary);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Mejor contraste del indicador en modo oscuro */
+[data-theme="dark"] .register-step-text {
+  background-color: #1F1F1F;
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Formulario */
 .register-form {
   background-color: var(--color-white);
   border-radius: 16px;
-  padding: 24px 20px;
+  padding: 22px 18px;
   box-shadow: 0 2px 12px var(--color-shadow);
+  transition: background-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+/* Glass card effect en modo oscuro - sombras difusas y tenues */
+[data-theme="dark"] .register-form {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.03), 0 8px 32px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
 }
 
 .register-heart-icon {
@@ -45,25 +72,27 @@
 }
 
 .register-title {
-  margin: 0 0 8px 0;
-  font-size: 28px;
+  margin: 0 0 6px 0;
+  font-size: 26px;
   font-weight: 700;
   color: var(--color-text-primary);
   text-align: center;
   letter-spacing: -0.5px;
+  transition: color 0.25s ease;
 }
 
 .register-subtitle {
-  margin: 0 0 24px 0;
-  font-size: 14px;
+  margin: 0 0 20px 0;
+  font-size: 13px;
   color: var(--color-text-secondary);
   text-align: center;
   font-weight: 500;
+  transition: color 0.25s ease;
 }
 
 /* Campos del formulario */
 .register-field {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .register-label {
@@ -72,20 +101,37 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text-primary);
+  transition: color 0.25s ease;
 }
 
 .register-input,
 .register-select,
 .register-textarea {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 16px;
+  padding: 11px 14px;
+  font-size: 15px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background-color: var(--color-white);
   color: var(--color-text-primary);
-  transition: all 0.2s ease;
+  transition: all 0.25s ease, background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
   font-family: inherit;
+}
+
+/* Mejor contraste de bordes en modo oscuro */
+[data-theme="dark"] .register-input,
+[data-theme="dark"] .register-select,
+[data-theme="dark"] .register-textarea {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #1F1F1F;
+  color: var(--color-text-primary);
+}
+
+/* Placeholders más visibles en modo oscuro */
+[data-theme="dark"] .register-input::placeholder,
+[data-theme="dark"] .register-textarea::placeholder {
+  color: #7A7A7A;
+  opacity: 1;
 }
 
 .register-input:focus,
@@ -94,6 +140,15 @@
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+}
+
+/* Glow difuminado al focus en modo oscuro (magenta 100%) */
+[data-theme="dark"] .register-input:focus,
+[data-theme="dark"] .register-select:focus,
+[data-theme="dark"] .register-textarea:focus {
+  border-color: var(--color-primary-100);
+  box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.2), 0 0 12px rgba(139, 21, 56, 0.15), 0 0 20px rgba(139, 21, 56, 0.1);
+  background-color: #222222;
 }
 
 .register-input-error,
@@ -138,6 +193,14 @@
   margin-bottom: 20px;
   font-size: 14px;
   text-align: center;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Mejor contraste del error general en modo oscuro */
+[data-theme="dark"] .register-error-general {
+  background-color: rgba(198, 40, 40, 0.15);
+  color: #FF6B6B;
+  border: 1px solid rgba(198, 40, 40, 0.3);
 }
 
 .register-info {
@@ -150,22 +213,27 @@
 /* Botones */
 .register-button-primary {
   width: 100%;
-  padding: 14px 24px;
+  padding: 13px 20px;
   background-color: var(--color-primary);
   color: var(--color-white);
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 8px;
+  transition: all 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+  margin-top: 6px;
 }
 
 .register-button-primary:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(139, 21, 56, 0.3);
+}
+
+/* Glow difuminado en hover para botones principales en modo oscuro */
+[data-theme="dark"] .register-button-primary:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgba(139, 21, 56, 0.4), 0 0 20px rgba(139, 21, 56, 0.2);
 }
 
 .register-button-primary:disabled {
@@ -175,7 +243,7 @@
 }
 
 .register-button-secondary {
-  padding: 12px 24px;
+  padding: 11px 20px;
   background-color: var(--color-white);
   color: var(--color-text-primary);
   border: 1px solid var(--color-border);
@@ -183,13 +251,36 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease, background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Mejor contraste de botones secundarios en modo oscuro */
+[data-theme="dark"] .register-button-secondary {
+  background-color: #1F1F1F;
+  border-color: #5A5A5A;
+  color: var(--color-text-primary);
 }
 
 .register-button-secondary:hover:not(:disabled) {
   background-color: var(--color-background);
   border-color: var(--color-primary);
   color: var(--color-primary);
+}
+
+[data-theme="dark"] .register-button-secondary:hover:not(:disabled) {
+  background-color: #252525;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-primary-100);
+  box-shadow: 0 0 0 2px rgba(139, 21, 56, 0.2), 0 0 8px rgba(139, 21, 56, 0.1);
+  outline: 1px solid rgba(255, 255, 255, 0.15);
+  outline-offset: -1px;
+}
+
+/* Ripple effect en clic para botones secundarios */
+[data-theme="dark"] .register-button-secondary:active:not(:disabled) {
+  background-color: #2A2A2A;
+  transform: scale(0.98);
+  transition: all 0.15s ease;
 }
 
 .register-button-secondary:disabled {
@@ -199,8 +290,8 @@
 
 .register-buttons {
   display: flex;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 10px;
+  margin-top: 20px;
   flex-wrap: wrap;
 }
 
@@ -319,9 +410,16 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+/* Mejor contraste del botón de archivo en modo oscuro */
+[data-theme="dark"] .register-file-button {
+  background-color: #1F1F1F;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .register-file-button:hover:not(:disabled) {
@@ -329,6 +427,10 @@
   color: var(--color-white);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(139, 21, 56, 0.3);
+}
+
+[data-theme="dark"] .register-file-button:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgba(139, 21, 56, 0.4), 0 0 8px rgba(139, 21, 56, 0.2);
 }
 
 .register-file-button:active:not(:disabled) {
@@ -395,14 +497,16 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 18px;
+  padding-top: 18px;
   border-top: 1px solid var(--color-border);
+  transition: border-color 0.25s ease;
 }
 
 .register-login-text {
   font-size: 14px;
   color: var(--color-text-secondary);
+  transition: color 0.25s ease;
 }
 
 .register-login-button {
@@ -410,7 +514,7 @@
   font-weight: 600;
   color: var(--color-primary);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.25s ease;
 }
 
 .register-login-button:hover {

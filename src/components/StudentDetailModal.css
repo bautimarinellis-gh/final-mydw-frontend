@@ -15,6 +15,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background 0.25s ease;
 }
 
 .student-detail-image {
@@ -26,9 +27,14 @@
 
 .student-detail-initials {
   font-size: 64px;
-  color: var(--color-white);
+  color: #FFFFFF;
   font-weight: 700;
   letter-spacing: 2px;
+}
+
+/* Asegurar que las iniciales estén en blanco en modo oscuro */
+[data-theme="dark"] .student-detail-initials {
+  color: #FFFFFF;
 }
 
 .student-detail-info {
@@ -43,11 +49,13 @@
   font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: -0.5px;
+  transition: color 0.25s ease;
 }
 
 .student-detail-age {
   font-weight: normal;
   color: var(--color-text-secondary);
+  transition: color 0.25s ease;
 }
 
 .student-detail-field {
@@ -63,6 +71,12 @@
   justify-content: center;
   color: var(--color-primary);
   flex-shrink: 0;
+  transition: color 0.25s ease;
+}
+
+/* Mejor contraste del ícono en modo oscuro */
+[data-theme="dark"] .student-detail-field-icon {
+  color: var(--color-primary-100);
 }
 
 .student-detail-field-label {
@@ -70,12 +84,19 @@
   font-weight: 600;
   color: var(--color-text-secondary);
   min-width: 60px;
+  transition: color 0.25s ease;
+}
+
+/* Labels más claros en modo oscuro */
+[data-theme="dark"] .student-detail-field-label {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .student-detail-field-value {
   font-size: 14px;
   color: var(--color-text-primary);
   font-weight: 500;
+  transition: color 0.25s ease;
 }
 
 .student-detail-section {
@@ -87,6 +108,7 @@
   font-size: 18px;
   font-weight: 700;
   color: var(--color-text-primary);
+  transition: color 0.25s ease;
 }
 
 .student-detail-description {
@@ -94,6 +116,7 @@
   font-size: 14px;
   color: var(--color-text-secondary);
   line-height: 1.6;
+  transition: color 0.25s ease;
 }
 
 .student-detail-interests {
@@ -112,7 +135,7 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, background-color 0.25s ease;
   margin-top: 8px;
   box-shadow: 0 4px 12px rgba(139, 21, 56, 0.25);
 }
@@ -121,6 +144,18 @@
   background-color: var(--color-primary-hover);
   box-shadow: 0 6px 16px rgba(139, 21, 56, 0.35);
   transform: translateY(-2px);
+}
+
+/* Botón Volver con mejor contraste en modo oscuro */
+[data-theme="dark"] .student-detail-back-button {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(139, 21, 56, 0.4);
+}
+
+[data-theme="dark"] .student-detail-back-button:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: 0 6px 16px rgba(139, 21, 56, 0.6), 0 0 20px rgba(139, 21, 56, 0.35);
 }
 
 .student-detail-back-button:active {

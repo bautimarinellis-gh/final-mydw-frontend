@@ -54,12 +54,21 @@
 }
 
 .discover-error {
-  background-color: #FFEBEE;
+  background-color: rgba(198, 40, 40, 0.1);
   color: #C62828;
+  border: 1px solid rgba(198, 40, 40, 0.3);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
   padding: 16px;
   border-radius: 8px;
   margin-bottom: 20px;
   text-align: center;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .discover-error {
+  background-color: rgba(255, 82, 82, 0.15);
+  color: #FF5252;
+  border-color: rgba(255, 82, 82, 0.3);
 }
 
 /* Contenedor de card con flechas de navegación */

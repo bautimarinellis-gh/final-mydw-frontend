@@ -11,13 +11,13 @@
 
 .swipe-button {
   border-radius: 50%;
-  background-color: #FFFFFF;
+  background-color: var(--color-white);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease;
+  box-shadow: 0 2px 8px var(--color-shadow);
   transform: scale(1);
   will-change: transform;
   border: none;
@@ -29,12 +29,12 @@
 }
 
 .swipe-button:not(:disabled):hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 16px var(--color-shadow-xl);
   transform: scale(1.1);
 }
 
 .swipe-button:not(:disabled):active {
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 3px 8px var(--color-shadow);
   transform: scale(0.95);
 }
 
@@ -83,13 +83,13 @@
 }
 
 .dislike-button:not(:disabled):hover {
-  border-color: #CCCCCC;
-  background-color: #FAFAFA;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  border-color: var(--color-inactive);
+  background-color: var(--color-background);
+  box-shadow: 0 6px 16px var(--color-shadow-xl);
 }
 
 .dislike-button:not(:disabled):active {
-  background-color: #F5F5F5;
+  background-color: var(--color-disabled);
   transform: scale(0.95);
 }
 
@@ -103,7 +103,7 @@
 
 .like-button:not(:disabled):hover {
   background-color: var(--color-primary-hover);
-  box-shadow: 0 6px 20px rgba(139, 21, 56, 0.35);
+  box-shadow: 0 6px 20px var(--color-shadow-xl);
 }
 
 .like-button:not(:disabled):active {
@@ -122,12 +122,12 @@
 
 .skip-button:not(:disabled):hover {
   border-color: var(--color-text-secondary);
-  background-color: #FAFAFA;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  background-color: var(--color-background);
+  box-shadow: 0 6px 16px var(--color-shadow);
 }
 
 .skip-button:not(:disabled):active {
-  background-color: #F5F5F5;
+  background-color: var(--color-disabled);
   transform: scale(0.95);
 }
 

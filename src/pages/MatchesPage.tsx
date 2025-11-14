@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { NavigationBar, LoadingSpinner, BackgroundPattern, MatchCard, HeartIcon } from '../components';
+import { NavigationBar, LoadingSpinner, BackgroundPattern, MatchCard, HeartIcon, ThemeToggle } from '../components';
 import { discoverService } from '../services';
 import type { Match } from '../types';
 import './MatchesPage.css';
@@ -47,6 +47,7 @@ const MatchesPage = () => {
   return (
     <div className="matches-page">
       <BackgroundPattern />
+      <ThemeToggle />
       
       {/* Header */}
       <div className="matches-header">
