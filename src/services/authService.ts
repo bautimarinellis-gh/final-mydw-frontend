@@ -3,6 +3,20 @@ import api from './api';
 import { ACCESS_TOKEN_KEY, USER_KEY } from '../constants/storage';
 import type { LoginRequest, RegisterRequest, AuthResponse, Usuario } from '../types';
 
+// Tipo para representar el usuario tal como viene del backend (puede tener fotoPerfil)
+type UsuarioBackend = Omit<Usuario, 'fotoUrl'> & {
+  fotoUrl?: string;
+  fotoPerfil?: string;
+};
+
+// Función helper para normalizar el usuario del backend al formato del frontend
+const normalizeUser = (user: UsuarioBackend): Usuario => {
+  return {
+    ...user,
+    fotoUrl: user.fotoUrl || user.fotoPerfil,
+  };
+};
+
 const saveAuthData = (accessToken: string, user: Usuario) => {
   try {
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
@@ -38,15 +52,12 @@ export const authService = {
     const response = await api.post<AuthResponse>('/api/auth/login', credentials);
     const { accessToken, user } = response.data;
     
-    // Si el backend devuelve fotoPerfil pero el frontend espera fotoUrl, mapear
-    const userDataMapped = user as any;
-    if (userDataMapped.fotoPerfil && !userDataMapped.fotoUrl) {
-      userDataMapped.fotoUrl = userDataMapped.fotoPerfil;
-    }
+    // Normalizar usuario del backend al formato del frontend
+    const normalizedUser = normalizeUser(user as UsuarioBackend);
     
     // refreshToken se guarda automáticamente en cookie HTTP-only por el backend
-    saveAuthData(accessToken, userDataMapped as Usuario);
-    return { ...response.data, user: userDataMapped as Usuario };
+    saveAuthData(accessToken, normalizedUser);
+    return { ...response.data, user: normalizedUser };
   },
 
   // Registrar nuevo usuario
@@ -56,16 +67,13 @@ export const authService = {
     // refreshToken se guarda automáticamente en cookie HTTP-only por el backend
     const { accessToken, user } = response.data;
     
-    // Si el backend devuelve fotoPerfil pero el frontend espera fotoUrl, mapear
-    const userDataMapped = user as any;
-    if (userDataMapped.fotoPerfil && !userDataMapped.fotoUrl) {
-      userDataMapped.fotoUrl = userDataMapped.fotoPerfil;
-    }
+    // Normalizar usuario del backend al formato del frontend
+    const normalizedUser = normalizeUser(user as UsuarioBackend);
     
     if (accessToken) {
-      saveAuthData(accessToken, userDataMapped as Usuario);
+      saveAuthData(accessToken, normalizedUser);
     }
-    return { ...response.data, user: userDataMapped as Usuario };
+    return { ...response.data, user: normalizedUser };
   },
 
   // Cerrar sesión
@@ -90,20 +98,17 @@ export const authService = {
 
   // Obtener usuario actual desde el backend
   getCurrentUser: async (): Promise<Usuario> => {
-    const response = await api.get<{ user: Usuario }>('/api/auth/me');
+    const response = await api.get<{ user: UsuarioBackend }>('/api/auth/me');
     
-    // Si el backend devuelve fotoPerfil pero el frontend espera fotoUrl, mapear
-    const userData = response.data.user as any;
-    if (userData.fotoPerfil && !userData.fotoUrl) {
-      userData.fotoUrl = userData.fotoPerfil;
-    }
+    // Normalizar usuario del backend al formato del frontend
+    const normalizedUser = normalizeUser(response.data.user);
     
     try {
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+      localStorage.setItem(USER_KEY, JSON.stringify(normalizedUser));
     } catch (error) {
       console.error('No se pudo actualizar el usuario en localStorage:', error);
     }
-    return userData as Usuario;
+    return normalizedUser;
   },
 
   // Verificar si el usuario está autenticado
@@ -134,26 +139,27 @@ export const authService = {
 
   // Actualizar perfil del usuario
   updateProfile: async (profileData: Partial<Usuario>): Promise<Usuario> => {
-    const response = await api.patch<{ user: Usuario }>('/api/auth/profile', profileData);
+    const response = await api.patch<{ user: UsuarioBackend } | UsuarioBackend>('/api/auth/profile', profileData);
     
     // Manejar diferentes estructuras de respuesta
-    const updatedUser = (response.data.user || response.data) as any;
-    
-    if (!updatedUser) {
+    let updatedUser: UsuarioBackend;
+    if ('user' in response.data && response.data.user) {
+      updatedUser = response.data.user;
+    } else if (!('user' in response.data)) {
+      updatedUser = response.data as UsuarioBackend;
+    } else {
       throw new Error('El backend no devolvió datos del usuario actualizado');
     }
     
-    // Si el backend devuelve fotoPerfil pero el frontend espera fotoUrl, mapear
-    if (updatedUser.fotoPerfil && !updatedUser.fotoUrl) {
-      updatedUser.fotoUrl = updatedUser.fotoPerfil;
-    }
+    // Normalizar usuario del backend al formato del frontend
+    const normalizedUser = normalizeUser(updatedUser);
     
     try {
-      localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+      localStorage.setItem(USER_KEY, JSON.stringify(normalizedUser));
     } catch (error) {
       console.error('No se pudo actualizar el usuario en localStorage:', error);
     }
-    return updatedUser as Usuario;
+    return normalizedUser;
   },
 
   // Subir imagen de perfil
@@ -185,22 +191,19 @@ export const authService = {
         },
       });
 
-      // Si el backend devuelve fotoPerfil pero el frontend espera fotoUrl, mapear
-      const userData = response.data.user as any;
-      if (userData.fotoPerfil && !userData.fotoUrl) {
-        userData.fotoUrl = userData.fotoPerfil;
-      }
+      // Normalizar usuario del backend al formato del frontend
+      const normalizedUser = normalizeUser(response.data.user as UsuarioBackend);
 
       // Actualizar usuario en localStorage
       try {
-        localStorage.setItem(USER_KEY, JSON.stringify(userData));
+        localStorage.setItem(USER_KEY, JSON.stringify(normalizedUser));
       } catch (error) {
         console.error('No se pudo actualizar el usuario en localStorage:', error);
       }
 
       return {
-        user: userData as Usuario,
-        imageUrl: response.data.imageUrl || userData.fotoUrl || userData.fotoPerfil,
+        user: normalizedUser,
+        imageUrl: response.data.imageUrl || normalizedUser.fotoUrl || '',
       };
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
