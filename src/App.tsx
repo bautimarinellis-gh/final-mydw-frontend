@@ -1,5 +1,6 @@
 import { AppRouter } from './routers';
-import { ThemeProvider, AuthProvider } from './contexts';
+import { ThemeProvider } from './features/theme';
+import { AuthProvider } from './features/auth';
 import './App.css';
 
 function App() {

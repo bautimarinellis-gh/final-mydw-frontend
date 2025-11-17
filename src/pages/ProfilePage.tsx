@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { NavigationBar, LoadingSpinner, BackgroundPattern, LocationIcon, GraduationIcon, AboutMe, Interests, EditProfileModal, BrokenHeartIcon, ConfirmModal, ThemeToggle } from '../components';
-import { useAuth } from '../contexts';
+import { useAuth } from '../features/auth';
 import type { Usuario } from '../types';
 import { getErrorMessage } from '../utils/error';
 import { getProfileImageUrl } from '../utils/image';

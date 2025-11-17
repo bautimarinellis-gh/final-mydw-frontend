@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { ACCESS_TOKEN_KEY } from '../constants/storage';
-import type { Mensaje } from '../types';
+import { ACCESS_TOKEN_KEY } from '../../constants/storage';
+import type { Mensaje } from '../../types';
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';

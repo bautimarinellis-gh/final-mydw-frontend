@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { chatService, authService } from '../services';
-import { useChatSocket } from '../hooks';
+import { useChatSocket } from '../features/chat';
 import { getProfileImageUrl } from '../utils/image';
+import { getErrorMessage } from '../utils/error';
 import { ArrowLeftIcon, LoadingSpinner } from '../components';
 import type { Mensaje, ConversacionDetalle } from '../types';
 import './ChatPage.css';
@@ -45,9 +46,9 @@ const ChatPage = () => {
         
         // Marcar mensajes como leídos
         await chatService.marcarMensajesLeidos(matchId);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error al cargar conversación:', err);
-        const errorMessage = err.response?.data?.message || 'No se pudo cargar la conversación';
+        const errorMessage = getErrorMessage(err, 'No se pudo cargar la conversación');
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -143,7 +144,7 @@ const ChatPage = () => {
       // Agregar mensajes antiguos al inicio
       setMensajes(prev => [...data.mensajes, ...prev]);
       setHasMore(data.mensajes.length + mensajes.length < data.total);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error al cargar más mensajes:', err);
     } finally {
       setLoadingMore(false);
@@ -222,7 +223,7 @@ const ChatPage = () => {
       setMensajes(prev => prev.map(m => 
         m.id === mensajeOptimista.id ? mensajeEnviado : m
       ));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error al enviar mensaje:', err);
       
       // Remover mensaje optimista en caso de error
@@ -234,7 +235,7 @@ const ChatPage = () => {
       setMensajes(prev => prev.filter(m => m.id !== mensajeOptimista.id));
       
       // Mostrar error
-      const errorMessage = err.response?.data?.message || 'No se pudo enviar el mensaje';
+      const errorMessage = getErrorMessage(err, 'No se pudo enviar el mensaje');
       setError(errorMessage);
       setTimeout(() => setError(null), 5000);
     } finally {

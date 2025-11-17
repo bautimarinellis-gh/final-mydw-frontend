@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { StudentCard, SwipeButtons, LoadingSpinner, EmptyDiscoverState, NavigationBar, BackgroundPattern, ArrowLeftIcon, ArrowRightIcon, MatchModal, ThemeToggle } from '../components';
 import { discoverService } from '../services';
-import { useAuth } from '../contexts';
+import { useAuth } from '../features/auth';
 import type { Usuario } from '../types';
 import { getErrorMessage } from '../utils/error';
 import axios from 'axios';

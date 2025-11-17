@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BackgroundPattern, EyeIcon, EyeOffIcon, UniversityHeartIcon, ThemeToggle } from '../components';
-import { useAuth } from '../contexts';
+import { useAuth } from '../features/auth';
 import { validateEmail, validatePassword } from '../utils/validation';
 import { getErrorMessage } from '../utils/error';
 import type { LoginRequest } from '../types';

@@ -3,7 +3,7 @@ import { z, type ZodIssue } from 'zod';
 import Modal from '../Modal';
 import { profileUpdateSchema, validateUniqueInterests } from '../../validators/profile';
 import { authService } from '../../services';
-import { useAuth } from '../../contexts';
+import { useAuth } from '../../features/auth';
 import { getProfileImageUrl } from '../../utils/image';
 import type { Usuario } from '../../types';
 import { CameraIcon, TrashIcon } from '../icons';

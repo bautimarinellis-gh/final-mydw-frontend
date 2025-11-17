@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BackgroundPattern, InterestTag, UniversityHeartIcon, ThemeToggle } from '../components';
 import { authService } from '../services';
-import { useAuth } from '../contexts';
+import { useAuth } from '../features/auth';
 import { CARRERAS } from '../constants/carreras';
 import { SEDES } from '../constants/sedes';
 import {
