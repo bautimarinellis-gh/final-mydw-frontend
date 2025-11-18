@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../../services';
-import type { Usuario, LoginRequest, RegisterRequest } from '../../types';
+import type { Usuario, LoginRequest, RegisterRequest, GoogleLoginRequest } from '../../types';
 import { AuthContext } from './auth-context';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -50,6 +50,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  const loginWithGoogle = useCallback(async (googleData: GoogleLoginRequest) => {
+    setIsLoading(true);
+    try {
+      const response = await authService.loginWithGoogle(googleData);
+      setUser(response.user);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   // Función de logout
   const logout = useCallback(async () => {
     setIsLoading(true);
@@ -86,6 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isLoading,
         login,
         register,
+        loginWithGoogle,
         logout,
         updateUser,
         refreshUser,

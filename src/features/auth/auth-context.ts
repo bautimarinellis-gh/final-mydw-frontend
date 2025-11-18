@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { Usuario, LoginRequest, RegisterRequest } from '../../types';
+import type { Usuario, LoginRequest, RegisterRequest, GoogleLoginRequest } from '../../types';
 
 export interface AuthContextType {
   user: Usuario | null;
@@ -7,6 +7,7 @@ export interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginRequest) => Promise<void>;
   register: (userData: RegisterRequest) => Promise<void>;
+  loginWithGoogle: (googleData: GoogleLoginRequest) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<Usuario>) => Promise<void>;
   refreshUser: () => Promise<void>;

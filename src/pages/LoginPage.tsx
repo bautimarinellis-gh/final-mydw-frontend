@@ -9,8 +9,9 @@ import './LoginPage.css';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -18,6 +19,7 @@ const LoginPage = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [googleError, setGoogleError] = useState<string | null>(null);
 
   // Validar formulario
   const validateForm = (): boolean => {
@@ -79,6 +81,22 @@ const LoginPage = () => {
       setGeneralError(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setGoogleError(null);
+    setGoogleLoading(true);
+
+    try {
+      await loginWithGoogle({});
+      navigate('/discover');
+    } catch (error: unknown) {
+      console.error('Error al iniciar sesión con Google:', error);
+      const errorMessage = getErrorMessage(error, 'No pudimos autenticarnos con Google.');
+      setGoogleError(errorMessage);
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -180,6 +198,27 @@ const LoginPage = () => {
           >
             {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
+
+          <div className="login-divider">
+            <span>o continúa con</span>
+          </div>
+
+          <div className="login-google-section">
+            {googleError && (
+              <div className="login-error-general login-google-error">
+                {googleError}
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="login-google-button"
+              onClick={handleGoogleLogin}
+              disabled={googleLoading}
+            >
+              {googleLoading ? 'Conectando con Google...' : 'Continuar con Google'}
+            </button>
+          </div>
 
           {/* Link a registro */}
           <div className="login-footer">

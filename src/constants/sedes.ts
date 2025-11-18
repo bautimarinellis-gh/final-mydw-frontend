@@ -3,7 +3,7 @@
  */
 export const SEDES = [
   // Buenos Aires
-  'BA -Centro',
+  'BA - Centro',
   'BA - Humberto Pino',
   'BA - Piedras',
   'BA - Almagro',

@@ -17,6 +17,15 @@ export interface RegisterRequest {
   intereses?: string[];
 }
 
+export interface GoogleLoginRequest {
+  carrera?: string;
+  sede?: string;
+  edad?: number;
+  nombre?: string;
+  apellido?: string;
+  fotoUrl?: string;
+}
+
 export interface AuthResponse {
   message: string;
   accessToken: string;

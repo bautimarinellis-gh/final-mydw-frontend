@@ -22,10 +22,13 @@ import './RegisterPage.css';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [googleError, setGoogleError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Datos del Paso 1
   const [step1Data, setStep1Data] = useState({
@@ -96,6 +99,60 @@ const RegisterPage = () => {
 
     // Avanzar al Paso 2
     setStep(2);
+  };
+
+  const handleGoogleRegister = async () => {
+    setGoogleError(null);
+    setSuccessMessage(null);
+    const fieldErrors: Record<string, string> = {};
+
+    if (!step1Data.carrera) {
+      fieldErrors.carrera = 'La carrera es requerida';
+    }
+
+    if (!step1Data.sede) {
+      fieldErrors.sede = 'La sede es requerida';
+    }
+
+    if (!step1Data.edad) {
+      fieldErrors.edad = 'La edad es requerida';
+    } else {
+      const edadError = validateEdad(step1Data.edad);
+      if (edadError) {
+        fieldErrors.edad = edadError;
+      }
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setStep1Errors((prev) => ({ ...prev, ...fieldErrors }));
+      setGoogleError(fieldErrors.edad || 'Completa carrera, sede y edad para registrarte con Google.');
+      return;
+    }
+
+    setGoogleLoading(true);
+    try {
+      await loginWithGoogle({
+        carrera: step1Data.carrera,
+        sede: step1Data.sede,
+        edad: parseInt(step1Data.edad, 10),
+      });
+      setSuccessMessage('¡Registro exitoso! Redirigiendo a inicio de sesión...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (error: unknown) {
+      console.error('Error al registrarse con Google:', error);
+      const errorMessage = getErrorMessage(error, 'No pudimos registrarte con Google.');
+      
+      // Si el email ya está registrado, mostrar mensaje más claro
+      if (errorMessage.includes('ya está registrado') || errorMessage.includes('ya existe')) {
+        setGoogleError('Este email ya está registrado. Si ya tienes una cuenta, ve a la página de inicio de sesión.');
+      } else {
+        setGoogleError(errorMessage);
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   // Agregar interés
@@ -179,6 +236,7 @@ const RegisterPage = () => {
   // Validar y enviar registro
   const handleRegister = async (skipStep2: boolean = false) => {
     setGeneralError(null);
+    setSuccessMessage(null);
     setStep1Errors({});
     setLoading(true);
 
@@ -236,8 +294,11 @@ const RegisterPage = () => {
         }
       }
 
-      // Redirigir a login
-      navigate('/login');
+      // Mostrar mensaje de éxito y redirigir
+      setSuccessMessage('¡Registro exitoso! Redirigiendo a inicio de sesión...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (error: unknown) {
       console.error('Error al registrar:', error);
 
@@ -291,6 +352,13 @@ const RegisterPage = () => {
             Paso {step} de 2
           </span>
         </div>
+
+        {/* Mensaje de éxito */}
+        {successMessage && (
+          <div className="register-success-general">
+            {successMessage}
+          </div>
+        )}
 
         {/* Error general */}
         {generalError && (
@@ -446,6 +514,36 @@ const RegisterPage = () => {
               {step1Errors.edad && (
                 <span className="register-error">{step1Errors.edad}</span>
               )}
+            </div>
+
+            <div className="register-divider">
+              <span>o continúa con</span>
+            </div>
+
+            <div className="register-google-section">
+              <p className="register-google-text">
+                Si prefieres, autentícate con Google. Solo necesitamos tu carrera, sede y edad para crear tu perfil universitario.
+              </p>
+              {googleError && (
+                <div className="register-error-general register-google-error">
+                  {googleError}
+                  {googleError.includes('ya está registrado') && (
+                    <div style={{ marginTop: '8px' }}>
+                      <Link to="/login" className="register-footer-link" style={{ fontSize: '13px' }}>
+                        Ir a iniciar sesión →
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+              <button
+                type="button"
+                className="register-google-button"
+                onClick={handleGoogleRegister}
+                disabled={googleLoading}
+              >
+                {googleLoading ? 'Conectando con Google...' : 'Continuar con Google'}
+              </button>
             </div>
 
             {/* Botón Continuar */}

@@ -206,6 +206,24 @@
   border: 1px solid rgba(198, 40, 40, 0.3);
 }
 
+.register-success-general {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Mejor contraste del mensaje de éxito en modo oscuro */
+[data-theme="dark"] .register-success-general {
+  background-color: rgba(46, 125, 50, 0.15);
+  color: #81C784;
+  border: 1px solid rgba(46, 125, 50, 0.3);
+}
+
 .register-info {
   display: block;
   margin-top: 6px;
@@ -247,6 +265,77 @@
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.register-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 12px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.register-divider::before,
+.register-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-border);
+}
+
+.register-google-section {
+  border: 1px dashed var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  background-color: rgba(139, 21, 56, 0.02);
+  margin-bottom: 12px;
+}
+
+[data-theme="dark"] .register-google-section {
+  background-color: rgba(139, 21, 56, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.register-google-text {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.register-google-button {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.register-google-button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .register-google-button {
+  background-color: #1F1F1F;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.register-google-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register-google-error {
+  margin-bottom: 12px;
 }
 
 .register-button-secondary {

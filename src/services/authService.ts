@@ -1,7 +1,15 @@
 import axios from 'axios';
+import { signInWithPopup } from 'firebase/auth';
 import api from './api';
 import { ACCESS_TOKEN_KEY, USER_KEY } from '../constants/storage';
-import type { LoginRequest, RegisterRequest, AuthResponse, Usuario } from '../types';
+import type {
+  LoginRequest,
+  RegisterRequest,
+  AuthResponse,
+  Usuario,
+  GoogleLoginRequest,
+} from '../types';
+import { auth, googleProvider } from '../config/firebaseClient';
 
 // Tipo para representar el usuario tal como viene del backend (puede tener fotoPerfil)
 type UsuarioBackend = Omit<Usuario, 'fotoUrl'> & {
@@ -209,6 +217,110 @@ export const authService = {
       if (axios.isAxiosError(error) && error.response) {
         throw new Error(error.response.data.message || 'Error al subir la imagen');
       }
+      throw error;
+    }
+  },
+
+  // Autenticación con Google
+  loginWithGoogle: async (googleData: GoogleLoginRequest = {}): Promise<AuthResponse> => {
+    try {
+      // Cerrar sesión de Firebase si existe una sesión activa para permitir seleccionar otra cuenta
+      // Esto es especialmente importante en el flujo de registro
+      try {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          await auth.signOut();
+        }
+      } catch (signOutError) {
+        console.warn('No se pudo cerrar sesión previa de Firebase:', signOutError);
+        // Continuar de todas formas
+      }
+      
+      const result = await signInWithPopup(auth, googleProvider);
+      const firebaseUser = result.user;
+
+      if (!firebaseUser) {
+        throw new Error('No se pudo obtener la cuenta de Google.');
+      }
+
+      const idToken = await firebaseUser.getIdToken();
+
+      // Extraer información del usuario de Google
+      const displayName = firebaseUser.displayName || '';
+      const photoURL = firebaseUser.photoURL || '';
+      
+      // Dividir nombre completo en nombre y apellido
+      let nombre = '';
+      let apellido = '';
+      if (displayName) {
+        const nameParts = displayName.trim().split(/\s+/);
+        nombre = nameParts[0] || '';
+        apellido = nameParts.slice(1).join(' ') || '';
+      }
+
+      // Construir payload con todos los datos disponibles
+      const payload: {
+        idToken: string;
+        carrera?: string;
+        sede?: string;
+        edad?: number;
+        nombre?: string;
+        apellido?: string;
+        fotoUrl?: string;
+      } = {
+        idToken,
+      };
+
+      // Agregar datos del formulario si están presentes (para registro)
+      if (googleData.carrera) {
+        payload.carrera = googleData.carrera;
+      }
+      if (googleData.sede) {
+        payload.sede = googleData.sede;
+      }
+      if (googleData.edad !== undefined) {
+        payload.edad = googleData.edad;
+      }
+
+      // Agregar datos del usuario de Google (nombre, apellido, foto)
+      // Si vienen del formulario, usar esos; si no, usar los de Google
+      if (googleData.nombre) {
+        payload.nombre = googleData.nombre;
+      } else if (nombre) {
+        payload.nombre = nombre;
+      }
+
+      if (googleData.apellido) {
+        payload.apellido = googleData.apellido;
+      } else if (apellido) {
+        payload.apellido = apellido;
+      }
+
+      if (googleData.fotoUrl) {
+        payload.fotoUrl = googleData.fotoUrl;
+      } else if (photoURL) {
+        payload.fotoUrl = photoURL;
+      }
+
+      const response = await api.post<AuthResponse>('/api/auth/google', payload);
+
+      const normalizedUser = normalizeUser(response.data.user as UsuarioBackend);
+      saveAuthData(response.data.accessToken, normalizedUser);
+
+      return { ...response.data, user: normalizedUser };
+    } catch (error: unknown) {
+      // Si Firebase ya autenticó al usuario pero falla el backend, cerramos la sesión de Firebase
+      try {
+        await auth.signOut();
+      } catch (signOutError) {
+        console.warn('No se pudo cerrar sesión en Firebase:', signOutError);
+      }
+      
+      // Mejorar mensajes de error específicos de Firebase
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'auth/configuration-not-found') {
+        throw new Error('La autenticación de Google no está habilitada en Firebase Console. Por favor, habilítala en Authentication > Sign-in method > Google.');
+      }
+      
       throw error;
     }
   },
