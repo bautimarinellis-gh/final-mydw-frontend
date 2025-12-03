@@ -106,17 +106,31 @@ export const authService = {
 
   // Obtener usuario actual desde el backend
   getCurrentUser: async (): Promise<Usuario> => {
-    const response = await api.get<{ user: UsuarioBackend }>('/api/auth/me');
-    
-    // Normalizar usuario del backend al formato del frontend
-    const normalizedUser = normalizeUser(response.data.user);
-    
     try {
-      localStorage.setItem(USER_KEY, JSON.stringify(normalizedUser));
-    } catch (error) {
-      console.error('No se pudo actualizar el usuario en localStorage:', error);
+      const response = await api.get<{ user: UsuarioBackend }>('/api/auth/me');
+      
+      // Normalizar usuario del backend al formato del frontend
+      const normalizedUser = normalizeUser(response.data.user);
+      
+      try {
+        localStorage.setItem(USER_KEY, JSON.stringify(normalizedUser));
+      } catch (error) {
+        console.error('No se pudo actualizar el usuario en localStorage:', error);
+      }
+      return normalizedUser;
+    } catch (error: unknown) {
+      // Si la cuenta está desactivada, el backend devuelve 403 con código ACCOUNT_DEACTIVATED
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        const data = error.response.data as { code?: string; message?: string };
+        if (data.code === 'ACCOUNT_DEACTIVATED') {
+          clearAuthData();
+          const deactivatedError = new Error('Tu cuenta ha sido desactivada');
+          (deactivatedError as any).code = 'ACCOUNT_DEACTIVATED';
+          throw deactivatedError;
+        }
+      }
+      throw error;
     }
-    return normalizedUser;
   },
 
   // Verificar si el usuario está autenticado
@@ -218,6 +232,30 @@ export const authService = {
         throw new Error(error.response.data.message || 'Error al subir la imagen');
       }
       throw error;
+    }
+  },
+
+  // Desactivar cuenta
+  deactivateAccount: async (): Promise<void> => {
+    try {
+      await api.patch('/api/auth/me/deactivate');
+    } catch (error) {
+      console.error('Error al desactivar cuenta:', error);
+      throw error;
+    } finally {
+      clearAuthData();
+    }
+  },
+
+  // Eliminar cuenta
+  deleteAccount: async (): Promise<void> => {
+    try {
+      await api.delete('/api/auth/me');
+    } catch (error) {
+      console.error('Error al eliminar cuenta:', error);
+      throw error;
+    } finally {
+      clearAuthData();
     }
   },
 

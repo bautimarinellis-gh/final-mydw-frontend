@@ -228,7 +228,71 @@
   opacity: 1;
 }
 
-/* Responsive: Desktop - CTAs horizontales */
+/* Account actions (Desactivar/Eliminar cuenta) */
+.profile-account-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.profile-account-button {
+  width: 100%;
+  padding: 10px;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease, background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  font-family: inherit;
+}
+
+.profile-account-button:hover {
+  background-color: rgba(198, 40, 40, 0.1);
+  border-color: rgba(198, 40, 40, 0.3);
+  color: #C62828;
+}
+
+.profile-deactivate-button {
+  /* Desactivar es menos severo que eliminar */
+}
+
+.profile-delete-button {
+  /* Eliminar es la acción más severa */
+  color: #D32F2F;
+  border-color: rgba(211, 47, 47, 0.3);
+}
+
+.profile-delete-button:hover {
+  background-color: rgba(211, 47, 47, 0.15);
+  border-color: rgba(211, 47, 47, 0.5);
+  color: #C62828;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .profile-account-button:hover {
+  background-color: rgba(255, 82, 82, 0.15);
+  border-color: rgba(255, 82, 82, 0.3);
+  color: #FF5252;
+}
+
+[data-theme="dark"] .profile-delete-button {
+  color: #FF5252;
+  border-color: rgba(255, 82, 82, 0.3);
+}
+
+[data-theme="dark"] .profile-delete-button:hover {
+  background-color: rgba(255, 82, 82, 0.2);
+  border-color: rgba(255, 82, 82, 0.5);
+}
+
+/* Responsive: Desktop */
 @media (min-width: 768px) {
   .profile-ctas-primary {
     flex-direction: row;

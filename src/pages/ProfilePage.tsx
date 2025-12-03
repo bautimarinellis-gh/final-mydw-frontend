@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { NavigationBar, LoadingSpinner, BackgroundPattern, LocationIcon, GraduationIcon, AboutMe, Interests, EditProfileModal, BrokenHeartIcon, ConfirmModal, ThemeToggle } from '../components';
 import { useAuth } from '../features/auth';
+import { authService } from '../services/authService';
 import type { Usuario } from '../types';
 import { getErrorMessage } from '../utils/error';
 import { getProfileImageUrl } from '../utils/image';
@@ -13,6 +14,8 @@ const ProfilePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
 
   // Función para cargar usuario
@@ -56,6 +59,40 @@ const ProfilePage = () => {
       console.error('Error al cerrar sesión:', err);
       // Aunque haya error, limpiar datos locales y redirigir
       navigate('/login');
+    }
+  };
+
+  // Manejar desactivación de cuenta
+  const handleDeactivateAccount = async () => {
+    try {
+      setLoading(true);
+      await authService.deactivateAccount();
+      // Después de desactivar, redirigir al login
+      navigate('/login', { replace: true });
+    } catch (error) {
+      console.error('Error al desactivar cuenta:', error);
+      const errorMessage = getErrorMessage(error, 'No se pudo desactivar tu cuenta');
+      setError(errorMessage);
+      setIsDeactivateModalOpen(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Manejar eliminación de cuenta
+  const handleDeleteAccount = async () => {
+    try {
+      setLoading(true);
+      await authService.deleteAccount();
+      // Después de eliminar, redirigir al login
+      navigate('/login', { replace: true });
+    } catch (error) {
+      console.error('Error al eliminar cuenta:', error);
+      const errorMessage = getErrorMessage(error, 'No se pudo eliminar tu cuenta');
+      setError(errorMessage);
+      setIsDeleteModalOpen(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -221,6 +258,22 @@ const ProfilePage = () => {
             <BrokenHeartIcon size={16} />
             <span>Cerrar sesión</span>
           </button>
+
+          {/* Botones de cuenta */}
+          <div className="profile-account-actions">
+            <button 
+              onClick={() => setIsDeactivateModalOpen(true)} 
+              className="profile-account-button profile-deactivate-button"
+            >
+              Desactivar cuenta
+            </button>
+            <button 
+              onClick={() => setIsDeleteModalOpen(true)} 
+              className="profile-account-button profile-delete-button"
+            >
+              Eliminar cuenta
+            </button>
+          </div>
         </div>
       </div>
 
@@ -246,7 +299,31 @@ const ProfilePage = () => {
         confirmButtonVariant="danger"
       />
 
-      <NavigationBar isModalOpen={isEditModalOpen || isLogoutModalOpen} />
+      {/* Modal de confirmación de desactivación */}
+      <ConfirmModal
+        isOpen={isDeactivateModalOpen}
+        onClose={() => setIsDeactivateModalOpen(false)}
+        onConfirm={handleDeactivateAccount}
+        title="Desactivar cuenta"
+        message="¿Estás seguro de que quieres desactivar tu cuenta? Podrás reactivarla iniciando sesión más tarde."
+        confirmText="Desactivar"
+        cancelText="Cancelar"
+        confirmButtonVariant="danger"
+      />
+
+      {/* Modal de confirmación de eliminación */}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteAccount}
+        title="Eliminar cuenta"
+        message="¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer. Se eliminarán todos tus datos, mensajes y matches."
+        confirmText="Eliminar permanentemente"
+        cancelText="Cancelar"
+        confirmButtonVariant="danger"
+      />
+
+      <NavigationBar isModalOpen={isEditModalOpen || isLogoutModalOpen || isDeactivateModalOpen || isDeleteModalOpen} />
     </div>
   );
 };

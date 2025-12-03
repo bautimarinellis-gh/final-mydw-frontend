@@ -19,8 +19,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true);
       const updatedUser = await authService.getCurrentUser();
       setUser(updatedUser);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al actualizar usuario:', error);
+      
+      // Si la cuenta está desactivada, limpiar sesión
+      const errorCode = (error as any)?.code;
+      if (errorCode === 'ACCOUNT_DEACTIVATED') {
+        console.warn('Cuenta desactivada detectada, limpiando sesión');
+        setUser(null);
+        return;
+      }
+      
       // Si hay error al obtener usuario, probablemente el token expiró
       setUser(null);
     } finally {
@@ -87,6 +96,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Este efecto es principalmente para observar cambios externos
     // El authService ya maneja la sincronización con localStorage
   }, [user]);
+
+  // Validar que el usuario siga activo al montar el componente
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Validar usuario activo al cargar
+      refreshUser();
+    }
+  }, []);
 
   return (
     <AuthContext.Provider
