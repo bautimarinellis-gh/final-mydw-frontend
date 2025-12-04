@@ -21,7 +21,15 @@ const DiscoverPage = () => {
   const [historyIndex, setHistoryIndex] = useState<number>(-1); // Índice actual en el historial (-1 = perfil nuevo)
   const [showMatchModal, setShowMatchModal] = useState(false);
   const [matchedUserName, setMatchedUserName] = useState('');
+  const [sedeFilter, setSedeFilter] = useState<string>('');
+  const [carreraFilter, setCarreraFilter] = useState<string>('');
+  const [interesFilter, setInteresFilter] = useState<string>('');
+  const [searchFilter, setSearchFilter] = useState<string>(''); // nombre / descripción
+  const [edadMinFilter, setEdadMinFilter] = useState<string>('');
+  const [edadMaxFilter, setEdadMaxFilter] = useState<string>('');
   const maxRetriesRef = useRef(0);
+  const [sedeOptions, setSedeOptions] = useState<string[]>([]);
+  const [carreraOptions, setCarreraOptions] = useState<string[]>([]);
   const MAX_RETRIES = 10; // Máximo de intentos para evitar loops infinitos
 
   // ID del usuario actual desde el contexto
@@ -34,6 +42,21 @@ const DiscoverPage = () => {
     if (!profile || !currentUserId) return true; // Si no hay perfil o no hay usuario actual, permitir
     return profile.id !== currentUserId;
   };
+
+    useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const data = await discoverService.getFilterOptions();
+        // Ordenar alfabéticamente para que quede prolijo
+        setSedeOptions(data.sedes.sort());
+        setCarreraOptions(data.carreras.sort());
+      } catch (err) {
+        console.error('Error al cargar opciones de filtros:', err);
+      }
+    };
+
+    fetchFilterOptions();
+  }, []);
 
   // Cargar siguiente perfil desde el backend
   // El backend debe filtrar:
@@ -55,7 +78,14 @@ const DiscoverPage = () => {
         return;
       }
       
-      const response = await discoverService.getNextProfile();
+      const response = await discoverService.getNextProfile({
+        sede: sedeFilter || undefined,
+        carrera: carreraFilter || undefined,
+        interes: interesFilter || undefined,
+        q: searchFilter || undefined,
+        edadMin: edadMinFilter || undefined,
+        edadMax: edadMaxFilter || undefined,
+      });
       
       if (response.estudiante) {
         // Validar que no sea el propio perfil del usuario
@@ -83,7 +113,7 @@ const DiscoverPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUserId]);
+  },[currentUserId, sedeFilter, carreraFilter, interesFilter, searchFilter, edadMinFilter, edadMaxFilter]);
 
   // Cargar perfil inicial cuando se tenga el ID del usuario actual
   useEffect(() => {
@@ -225,6 +255,89 @@ const DiscoverPage = () => {
           </p>
         </div>
       </div>
+      {/* Filtros */}
+      <div className="discover-filters">
+        <div className="discover-filters-row">
+          <select
+  value={sedeFilter}
+  onChange={e => setSedeFilter(e.target.value)}
+  className="discover-filter-select"
+>
+  <option value="">Todas las sedes</option>
+  {sedeOptions.map(sede => (
+    <option key={sede} value={sede}>
+      {sede}
+    </option>
+  ))}
+</select>
+
+<select
+  value={carreraFilter}
+  onChange={e => setCarreraFilter(e.target.value)}
+  className="discover-filter-select"
+>
+  <option value="">Todas las carreras</option>
+  {carreraOptions.map(carrera => (
+    <option key={carrera} value={carrera}>
+      {carrera}
+    </option>
+  ))}
+</select>
+
+
+          <input
+            type="text"
+            placeholder="Buscar por nombre o descripción..."
+            value={searchFilter}
+            onChange={e => setSearchFilter(e.target.value)}
+            className="discover-filter-input"
+          />
+        </div>
+
+        <div className="discover-filters-row">
+          <input
+            type="number"
+            min={18}
+            max={100}
+            placeholder="Edad mín."
+            value={edadMinFilter}
+            onChange={e => setEdadMinFilter(e.target.value)}
+            className="discover-filter-input small"
+          />
+          <input
+            type="number"
+            min={18}
+            max={100}
+            placeholder="Edad máx."
+            value={edadMaxFilter}
+            onChange={e => setEdadMaxFilter(e.target.value)}
+            className="discover-filter-input small"
+          />
+
+          <input
+            type="text"
+            placeholder="Interés (ej: React)"
+            value={interesFilter}
+            onChange={e => setInteresFilter(e.target.value)}
+            className="discover-filter-input"
+          />
+
+          <button
+            className="discover-filter-reset"
+            onClick={() => {
+              setSedeFilter('');
+              setCarreraFilter('');
+              setInteresFilter('');
+              setSearchFilter('');
+              setEdadMinFilter('');
+              setEdadMaxFilter('');
+              loadNextProfile(0); // recargar con filtros limpios
+            }}
+          >
+            Limpiar filtros
+          </button>
+        </div>
+      </div>
 
       {/* Contenido principal */}
       <div className="discover-content">
@@ -284,6 +397,7 @@ const DiscoverPage = () => {
             />
           </>
         )}
+        
       </div>
 
       <NavigationBar isModalOpen={isModalOpen || showMatchModal} />
