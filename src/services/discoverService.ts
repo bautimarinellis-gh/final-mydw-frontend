@@ -1,20 +1,36 @@
 import api from './api';
 import type { NextProfileResponse, SwipeRequest, SwipeResponse, Match, Usuario } from '../types';
 
+type LikeHistoryItem = {
+  id: string;
+  createdAt: string;
+  estudiante: Usuario;
+};
+
+// 🔹 Tipo para los filtros opcionales
+type DiscoverFilters = {
+  sede?: string;
+  carrera?: string;
+  interes?: string;
+  q?: string;
+  edadMin?: string;
+  edadMax?: string;
+};
+
 // Función helper para mapear fotoPerfil a fotoUrl
 const mapFotoPerfilToFotoUrl = (user: Usuario | Record<string, unknown>): Usuario => {
   if (!user) return user as Usuario;
   
   const userWithFotoPerfil = user as Usuario & { fotoPerfil?: string; foto?: string; profileImage?: string; avatar?: string };
   
-  // Intentar encontrar el campo de imagen con diferentes nombres posibles
-  const imageField = userWithFotoPerfil.fotoPerfil || 
-                     userWithFotoPerfil.foto || 
-                     userWithFotoPerfil.profileImage || 
-                     userWithFotoPerfil.avatar ||
-                     (user as Record<string, unknown>).fotoPerfil as string ||
-                     (user as Record<string, unknown>).foto as string;
-  
+  const imageField =
+    userWithFotoPerfil.fotoPerfil ||
+    userWithFotoPerfil.foto ||
+    userWithFotoPerfil.profileImage ||
+    userWithFotoPerfil.avatar ||
+    (user as any).fotoPerfil ||
+    (user as any).foto;
+
   if (imageField && !userWithFotoPerfil.fotoUrl) {
     userWithFotoPerfil.fotoUrl = imageField;
   }
@@ -22,16 +38,39 @@ const mapFotoPerfilToFotoUrl = (user: Usuario | Record<string, unknown>): Usuari
   return userWithFotoPerfil as Usuario;
 };
 
+type FilterOptionsResponse = {
+  carreras: string[];
+  sedes: string[];
+};
+
 export const discoverService = {
   // Obtener siguiente perfil para swipe
-  getNextProfile: async (): Promise<NextProfileResponse> => {
-    const response = await api.get<NextProfileResponse>('/api/discover/next');
-    
-    // Mapear fotoPerfil a fotoUrl si existe
+  getNextProfile: async (filters?: DiscoverFilters): Promise<NextProfileResponse> => {
+    const params = new URLSearchParams();
+
+    if (filters) {
+      if (filters.sede) params.append('sede', filters.sede);
+      if (filters.carrera) params.append('carrera', filters.carrera);
+      if (filters.interes) params.append('interes', filters.interes);
+      if (filters.q) params.append('q', filters.q);
+      if (filters.edadMin) params.append('edadMin', filters.edadMin);
+      if (filters.edadMax) params.append('edadMax', filters.edadMax);
+    }
+
+    const query = params.toString();
+    const url = query ? `/api/discover/next?${query}` : '/api/discover/next';
+
+    const response = await api.get<NextProfileResponse>(url);
+
     if (response.data.estudiante) {
       response.data.estudiante = mapFotoPerfilToFotoUrl(response.data.estudiante);
     }
-    
+
+    return response.data;
+  },
+
+  getFilterOptions: async (): Promise<FilterOptionsResponse> => {
+    const response = await api.get<FilterOptionsResponse>('/api/discover/filters');
     return response.data;
   },
 
@@ -39,26 +78,34 @@ export const discoverService = {
   swipe: async (estudianteId: string, tipo: 'like' | 'dislike'): Promise<SwipeResponse> => {
     const data: SwipeRequest = { estudianteId, tipo };
     const response = await api.post<SwipeResponse>('/api/discover/swipe', data);
-    
-    // Mapear fotoPerfil a fotoUrl en el matchData si existe
+
     if (response.data.matchData?.estudiante) {
       response.data.matchData.estudiante = mapFotoPerfilToFotoUrl(response.data.matchData.estudiante);
     }
-    
+
     return response.data;
   },
 
   // Obtener lista de matches
   getMatches: async (): Promise<Match[]> => {
     const response = await api.get<{ matches: Match[]; total: number }>('/api/discover/matches');
-    
-    // Mapear fotoPerfil a fotoUrl en cada match
+
     const matches = response.data.matches.map(match => ({
       ...match,
       estudiante: mapFotoPerfilToFotoUrl(match.estudiante),
     }));
-    
+
     return matches;
   },
-};
 
+  // 🔥 NUEVO: obtener historial de likes enviados
+  getLikeHistory: async (): Promise<LikeHistoryItem[]> => {
+    const response = await api.get<{ likes: LikeHistoryItem[]; total: number }>('/api/discover/likes');
+
+    // Mapear fotoPerfil a fotoUrl
+    return response.data.likes.map(item => ({
+      ...item,
+      estudiante: mapFotoPerfilToFotoUrl(item.estudiante),
+    }));
+  },
+};
