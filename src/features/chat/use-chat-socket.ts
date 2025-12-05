@@ -82,29 +82,39 @@ export const useChatSocket = ({ matchId, onNewMessage, onError }: UseChatSocketO
     
     isConnectingRef.current = true;
 
-    const token = getAccessToken();
+    // Obtener token y verificar si está expirado
+    let token = getAccessToken();
+    
+    // Si no hay token, intentar renovarlo
     if (!token) {
-      isConnectingRef.current = false;
-      const error = new Error('No hay token de acceso disponible');
-      onErrorRef.current?.(error);
-      return;
+      console.log('[Socket] No hay token, intentando renovar...');
+      token = await refreshToken();
+      
+      if (!token) {
+        isConnectingRef.current = false;
+        const error = new Error('No hay token de acceso disponible. Por favor, inicia sesión nuevamente.');
+        onErrorRef.current?.(error);
+        return;
+      }
     }
 
 
     // Crear conexión Socket.io con autenticación
     // El backend espera el token en query string o en headers Authorization
-    // Nota: extraHeaders solo funciona en Node.js, en navegadores se usa query
-    // Usamos polling primero para el handshake, luego upgrade a WebSocket
+    // Intentar WebSocket primero, con fallback a polling si falla
     const socket = io(API_URL, {
       query: {
         token: token,
       },
-      transports: ['polling', 'websocket'], // Iniciar con polling, luego upgrade a WebSocket
-      upgrade: true, // Permitir upgrade automático a WebSocket después del handshake
+      transports: ['websocket', 'polling'], // Intentar WebSocket, fallback a polling
+      upgrade: true, // Permitir upgrade de polling a WebSocket
       reconnection: true,
       reconnectionAttempts: maxReconnectAttempts,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
+      // Configuración adicional
+      forceNew: false, // Reutilizar conexión si existe
+      timeout: 20000, // Timeout más largo para conexiones
     });
 
     socketRef.current = socket;
@@ -114,6 +124,7 @@ export const useChatSocket = ({ matchId, onNewMessage, onError }: UseChatSocketO
       reconnectAttemptsRef.current = 0;
       isConnectingRef.current = false;
       setIsConnected(true);
+      console.log(`[Socket] Conectado exitosamente. Transporte: ${socket.io.engine.transport.name}`);
     });
 
     // Manejar desconexión
@@ -139,24 +150,28 @@ export const useChatSocket = ({ matchId, onNewMessage, onError }: UseChatSocketO
       console.error('Error de conexión Socket:', error);
       
       // Si es error de autenticación, intentar renovar token
-      if (error.message.includes('auth') || error.message.includes('token') || error.message.includes('401')) {
+      if (error.message.includes('auth') || error.message.includes('token') || error.message.includes('401') || error.message.includes('Unauthorized')) {
+        console.log('[Socket] Error de autenticación, intentando renovar token...');
         const newToken = await refreshToken();
         
         if (newToken) {
-          // Reconectar con el nuevo token
-          // Desconectar y crear nueva conexión con el token actualizado
+          // Actualizar el token en la query string y reconectar
+          socket.io.opts.query = { token: newToken };
           socket.disconnect();
           socketRef.current = null;
-          // La reconexión automática se encargará de usar el nuevo token
+          isConnectingRef.current = false;
+          
+          // Esperar un momento antes de reconectar
           setTimeout(() => {
             connect();
           }, 1000);
         } else {
           reconnectAttemptsRef.current++;
+          console.error('[Socket] No se pudo renovar el token');
           
           if (reconnectAttemptsRef.current >= maxReconnectAttempts) {
             isConnectingRef.current = false;
-            const authError = new Error('No se pudo autenticar con el servidor');
+            const authError = new Error('No se pudo autenticar con el servidor. Por favor, inicia sesión nuevamente.');
             onErrorRef.current?.(authError);
           }
         }
