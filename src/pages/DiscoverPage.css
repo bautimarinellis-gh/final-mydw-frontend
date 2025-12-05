@@ -131,9 +131,18 @@
   margin: 0 auto 1.5rem;
   padding: 1rem 1.25rem;
   border-radius: 1rem;
-  background: rgba(15, 15, 20, 0.85);
+  background: var(--color-white);
   backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px var(--color-shadow);
+  border: 1px solid var(--color-border);
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .discover-filters {
+  background: rgba(15, 15, 20, 0.85);
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+  border-color: transparent;
 }
 
 .discover-filters-row {
@@ -152,11 +161,20 @@
   flex: 1;
   min-width: 140px;
   border-radius: 999px;
-  border: none;
+  border: 1px solid var(--color-border);
   padding: 0.55rem 0.9rem;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .discover-filter-select,
+[data-theme="dark"] .discover-filter-input {
   background: #18181b;
   color: #e5e7eb;
-  font-size: 0.9rem;
+  border-color: transparent;
 }
 
 .discover-filter-input.small {
@@ -165,28 +183,50 @@
 
 .discover-filter-select::placeholder,
 .discover-filter-input::placeholder {
+  color: var(--color-text-tertiary);
+  transition: color 0.25s ease;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .discover-filter-select::placeholder,
+[data-theme="dark"] .discover-filter-input::placeholder {
   color: #6b7280;
 }
 
 .discover-filter-select:focus,
 .discover-filter-input:focus {
-  outline: 2px solid #e11d48;
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  transition: outline-color 0.25s ease;
 }
 
 .discover-filter-reset {
   border-radius: 999px;
-  border: 1px solid #4b5563;
+  border: 1px solid var(--color-border);
   background: transparent;
-  color: #e5e7eb;
+  color: var(--color-text-primary);
   padding: 0.5rem 0.9rem;
   font-size: 0.8rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
 
 .discover-filter-reset:hover {
+  background: var(--color-background);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .discover-filter-reset {
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+
+[data-theme="dark"] .discover-filter-reset:hover {
   background: #27272f;
   border-color: #e11d48;
-  transform: translateY(-1px);
+  color: #e5e7eb;
 }
