@@ -74,34 +74,50 @@ const ChatPage = () => {
     }
 
     // Verificar si ya existe (evitar duplicados)
-    const existe = mensajes.some(m => m.id === mensaje.id);
-    if (existe) {
-      // Actualizar mensaje existente (por si cambió el estado de leído, etc.)
-      setMensajes(prev => prev.map(m => m.id === mensaje.id ? mensaje : m));
+    // Usar función de actualización para tener acceso al estado más reciente
+    setMensajes(prev => {
+      const existe = prev.some(m => m.id === mensaje.id);
       
-      // Si era un mensaje optimista, removerlo
-      setMensajesOptimistas(prev => {
-        const nuevo = new Map(prev);
-        nuevo.delete(mensaje.id);
-        return nuevo;
-      });
-    } else {
-      // Agregar nuevo mensaje
-      setMensajes(prev => [...prev, mensaje]);
-      
-      // Si era un mensaje optimista, removerlo
-      setMensajesOptimistas(prev => {
-        const nuevo = new Map(prev);
-        nuevo.delete(mensaje.id);
-        return nuevo;
-      });
-    }
+      if (existe) {
+        // Actualizar mensaje existente (por si cambió el estado de leído, etc.)
+        const actualizados = prev.map(m => m.id === mensaje.id ? mensaje : m);
+        // Reordenar después de actualizar
+        return actualizados.sort((a, b) => {
+          const timeA = typeof a.createdAt === 'string' 
+            ? new Date(a.createdAt).getTime()
+            : a.createdAt.getTime();
+          const timeB = typeof b.createdAt === 'string' 
+            ? new Date(b.createdAt).getTime()
+            : b.createdAt.getTime();
+          return timeA - timeB;
+        });
+      } else {
+        // Agregar nuevo mensaje y ordenar por timestamp
+        const nuevos = [...prev, mensaje];
+        return nuevos.sort((a, b) => {
+          const timeA = typeof a.createdAt === 'string' 
+            ? new Date(a.createdAt).getTime()
+            : a.createdAt.getTime();
+          const timeB = typeof b.createdAt === 'string' 
+            ? new Date(b.createdAt).getTime()
+            : b.createdAt.getTime();
+          return timeA - timeB;
+        });
+      }
+    });
+    
+    // Si era un mensaje optimista, removerlo
+    setMensajesOptimistas(prev => {
+      const nuevo = new Map(prev);
+      nuevo.delete(mensaje.id);
+      return nuevo;
+    });
 
     // Marcar como leído si es un mensaje recibido
     if (mensaje.destinatarioId === currentUserId && !mensaje.leido) {
       chatService.marcarMensajesLeidos(matchId!);
     }
-  }, [matchId, mensajes, currentUserId]);
+  }, [matchId, currentUserId]);
 
   // Manejar errores de WebSocket
   const handleSocketError = useCallback((error: Error) => {
@@ -110,7 +126,7 @@ const ChatPage = () => {
   }, []);
 
   // Configurar WebSocket
-  const { isConnected } = useChatSocket({
+  useChatSocket({
     matchId: matchId || '',
     onNewMessage: handleNewMessage,
     onError: handleSocketError,
@@ -205,7 +221,19 @@ const ChatPage = () => {
       nuevo.set(mensajeOptimista.id, mensajeOptimista);
       return nuevo;
     });
-    setMensajes(prev => [...prev, mensajeOptimista]);
+    setMensajes(prev => {
+      const nuevos = [...prev, mensajeOptimista];
+      // Ordenar por timestamp
+      return nuevos.sort((a, b) => {
+        const timeA = typeof a.createdAt === 'string' 
+          ? new Date(a.createdAt).getTime()
+          : a.createdAt.getTime();
+        const timeB = typeof b.createdAt === 'string' 
+          ? new Date(b.createdAt).getTime()
+          : b.createdAt.getTime();
+        return timeA - timeB;
+      });
+    });
 
     try {
       const mensajeEnviado = await chatService.enviarMensaje({
@@ -220,9 +248,21 @@ const ChatPage = () => {
         nuevo.delete(mensajeOptimista.id);
         return nuevo;
       });
-      setMensajes(prev => prev.map(m => 
-        m.id === mensajeOptimista.id ? mensajeEnviado : m
-      ));
+      setMensajes(prev => {
+        const actualizados = prev.map(m => 
+          m.id === mensajeOptimista.id ? mensajeEnviado : m
+        );
+        // Reordenar después de reemplazar
+        return actualizados.sort((a, b) => {
+          const timeA = typeof a.createdAt === 'string' 
+            ? new Date(a.createdAt).getTime()
+            : a.createdAt.getTime();
+          const timeB = typeof b.createdAt === 'string' 
+            ? new Date(b.createdAt).getTime()
+            : b.createdAt.getTime();
+          return timeA - timeB;
+        });
+      });
     } catch (err: unknown) {
       console.error('Error al enviar mensaje:', err);
       
@@ -293,7 +333,11 @@ const ChatPage = () => {
   }
 
   const { usuario } = conversacion;
-  const todosLosMensajes = [...mensajes];
+  // Eliminar duplicados por ID para evitar keys duplicadas en React
+  const mensajesUnicos = Array.from(
+    new Map(mensajes.map(m => [m.id, m])).values()
+  );
+  const todosLosMensajes = mensajesUnicos;
 
   return (
     <div className="chat-page">
@@ -323,9 +367,6 @@ const ChatPage = () => {
             <h2 className="chat-header-name">
               {usuario.nombre} {usuario.apellido}
             </h2>
-            <p className="chat-header-status">
-              {isConnected ? 'En línea' : 'Desconectado'}
-            </p>
           </div>
         </div>
       </header>

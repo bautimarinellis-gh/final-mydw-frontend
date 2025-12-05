@@ -17,6 +17,17 @@ export const useChatSocket = ({ matchId, onNewMessage, onError }: UseChatSocketO
   const reconnectAttemptsRef = useRef(0);
   const maxReconnectAttempts = 5;
   const [isConnected, setIsConnected] = useState(false);
+  const isConnectingRef = useRef(false);
+  
+  // Usar refs para los callbacks para evitar recrear la conexión
+  const onNewMessageRef = useRef(onNewMessage);
+  const onErrorRef = useRef(onError);
+  
+  // Actualizar refs cuando cambian los callbacks
+  useEffect(() => {
+    onNewMessageRef.current = onNewMessage;
+    onErrorRef.current = onError;
+  }, [onNewMessage, onError]);
 
   const getAccessToken = useCallback((): string | null => {
     if (typeof window === 'undefined') {
@@ -59,27 +70,41 @@ export const useChatSocket = ({ matchId, onNewMessage, onError }: UseChatSocketO
   }, []);
 
   const connect = useCallback(async () => {
-    // Si ya hay una conexión, no crear otra
+    // Si ya hay una conexión activa, no crear otra
     if (socketRef.current?.connected) {
       return;
     }
+    
+    // Si hay una conexión pendiente o ya se está conectando, esperar
+    if (isConnectingRef.current || (socketRef.current && !socketRef.current.disconnected)) {
+      return;
+    }
+    
+    isConnectingRef.current = true;
 
     const token = getAccessToken();
     if (!token) {
+      isConnectingRef.current = false;
       const error = new Error('No hay token de acceso disponible');
-      onError?.(error);
+      onErrorRef.current?.(error);
       return;
     }
 
+
     // Crear conexión Socket.io con autenticación
+    // El backend espera el token en query string o en headers Authorization
+    // Nota: extraHeaders solo funciona en Node.js, en navegadores se usa query
+    // Usamos polling primero para el handshake, luego upgrade a WebSocket
     const socket = io(API_URL, {
-      auth: {
+      query: {
         token: token,
       },
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'], // Iniciar con polling, luego upgrade a WebSocket
+      upgrade: true, // Permitir upgrade automático a WebSocket después del handshake
       reconnection: true,
       reconnectionAttempts: maxReconnectAttempts,
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
     });
 
     socketRef.current = socket;
@@ -87,10 +112,8 @@ export const useChatSocket = ({ matchId, onNewMessage, onError }: UseChatSocketO
     // Manejar conexión exitosa
     socket.on('connect', () => {
       reconnectAttemptsRef.current = 0;
+      isConnectingRef.current = false;
       setIsConnected(true);
-      
-      // Unirse a la sala del match
-      socket.emit('join_match', matchId);
     });
 
     // Manejar desconexión
@@ -100,6 +123,14 @@ export const useChatSocket = ({ matchId, onNewMessage, onError }: UseChatSocketO
       if (reason === 'io server disconnect') {
         // El servidor desconectó, intentar reconectar manualmente
         socket.connect();
+      }
+    });
+
+    // Actualizar token en cada intento de reconexión
+    socket.io.on('reconnect_attempt', () => {
+      const currentToken = getAccessToken();
+      if (currentToken) {
+        socket.io.opts.query = { token: currentToken };
       }
     });
 
@@ -113,53 +144,59 @@ export const useChatSocket = ({ matchId, onNewMessage, onError }: UseChatSocketO
         
         if (newToken) {
           // Reconectar con el nuevo token
-          socket.auth = { token: newToken };
-          socket.connect();
+          // Desconectar y crear nueva conexión con el token actualizado
+          socket.disconnect();
+          socketRef.current = null;
+          // La reconexión automática se encargará de usar el nuevo token
+          setTimeout(() => {
+            connect();
+          }, 1000);
         } else {
           reconnectAttemptsRef.current++;
           
           if (reconnectAttemptsRef.current >= maxReconnectAttempts) {
+            isConnectingRef.current = false;
             const authError = new Error('No se pudo autenticar con el servidor');
-            onError?.(authError);
+            onErrorRef.current?.(authError);
           }
         }
       } else {
         reconnectAttemptsRef.current++;
         
         if (reconnectAttemptsRef.current >= maxReconnectAttempts) {
-          onError?.(error);
+          isConnectingRef.current = false;
+          onErrorRef.current?.(error);
         }
       }
     });
 
-    // Escuchar eventos de mensajes nuevos
-    socket.on('nuevo_mensaje', (mensaje: Mensaje) => {
-      onNewMessage?.(mensaje);
-    });
-
-    // Escuchar confirmación de mensaje enviado
-    socket.on('mensaje_enviado', (mensaje: Mensaje) => {
-      onNewMessage?.(mensaje);
+    // Escuchar eventos de mensajes nuevos (corregido: el backend emite 'mensaje:nuevo')
+    socket.on('mensaje:nuevo', (mensaje: Mensaje) => {
+      onNewMessageRef.current?.(mensaje);
     });
 
     // Manejar errores del servidor
     socket.on('error', (error: { message: string }) => {
       console.error('Error del servidor Socket:', error);
       const serverError = new Error(error.message || 'Error del servidor');
-      onError?.(serverError);
+      onErrorRef.current?.(serverError);
     });
-  }, [matchId, getAccessToken, refreshToken, onNewMessage, onError]);
+  }, [getAccessToken, refreshToken]);
 
   useEffect(() => {
-    connect();
+    // Solo conectar si no hay conexión activa
+    if (!socketRef.current?.connected && !isConnectingRef.current) {
+      connect();
+    }
 
-    // Limpieza al desmontar
+    // Limpieza al desmontar o cuando cambia el matchId
     return () => {
       if (socketRef.current) {
-        socketRef.current.emit('leave_match', matchId);
         socketRef.current.removeAllListeners();
         socketRef.current.disconnect();
         socketRef.current = null;
+        isConnectingRef.current = false;
+        setIsConnected(false);
       }
     };
   }, [matchId, connect]);
