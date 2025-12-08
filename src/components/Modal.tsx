@@ -1,3 +1,8 @@
+/**
+ * Modal - Componente base de modal reutilizable con overlay, header y botón de cierre.
+ * Maneja scroll lock, cierre con Escape y click fuera del modal.
+ */
+
 import { useEffect } from 'react';
 import CloseIcon from './icons/CloseIcon';
 import './Modal.css';

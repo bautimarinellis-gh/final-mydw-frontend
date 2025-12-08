@@ -1,3 +1,8 @@
+/**
+ * index.ts - Exportaciones centralizadas de todos los componentes de UI.
+ * Incluye componentes principales, iconos y componentes de perfil.
+ */
+
 export { default as InterestTag } from './InterestTag';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as EmptyState } from './EmptyState';

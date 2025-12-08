@@ -1,3 +1,8 @@
+/**
+ * StudentCard - Tarjeta de perfil de estudiante para swipe con foto, datos y botón "Ver más".
+ * Incluye animaciones de deslizamiento y escala según la acción (like/dislike).
+ */
+
 import { useState } from 'react';
 import type { Usuario } from '../types';
 import { getProfileImageUrl } from '../utils/image';

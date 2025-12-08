@@ -1,3 +1,8 @@
+/**
+ * discoverService.ts - Servicio para descubrir perfiles, hacer swipe (like/dislike) y obtener matches/likes.
+ * Incluye sistema de filtros opcionales y normalización de imágenes de perfil.
+ */
+
 import api from './api';
 import type { NextProfileResponse, SwipeRequest, SwipeResponse, Match, Usuario } from '../types';
 
@@ -7,7 +12,6 @@ type LikeHistoryItem = {
   estudiante: Usuario;
 };
 
-// 🔹 Tipo para los filtros opcionales
 type DiscoverFilters = {
   sede?: string;
   carrera?: string;
@@ -17,7 +21,6 @@ type DiscoverFilters = {
   edadMax?: string;
 };
 
-// Función helper para mapear fotoPerfil a fotoUrl
 const mapFotoPerfilToFotoUrl = (user: Usuario | Record<string, unknown>): Usuario => {
   if (!user) return user as Usuario;
   
@@ -74,7 +77,6 @@ export const discoverService = {
     return response.data;
   },
 
-  // Hacer swipe (like o dislike)
   swipe: async (estudianteId: string, tipo: 'like' | 'dislike'): Promise<SwipeResponse> => {
     const data: SwipeRequest = { estudianteId, tipo };
     const response = await api.post<SwipeResponse>('/api/discover/swipe', data);
@@ -86,7 +88,6 @@ export const discoverService = {
     return response.data;
   },
 
-  // Obtener lista de matches
   getMatches: async (): Promise<Match[]> => {
     const response = await api.get<{ matches: Match[]; total: number }>('/api/discover/matches');
 
@@ -98,11 +99,9 @@ export const discoverService = {
     return matches;
   },
 
-  // 🔥 NUEVO: obtener historial de likes enviados
   getLikeHistory: async (): Promise<LikeHistoryItem[]> => {
     const response = await api.get<{ likes: LikeHistoryItem[]; total: number }>('/api/discover/likes');
 
-    // Mapear fotoPerfil a fotoUrl
     return response.data.likes.map(item => ({
       ...item,
       estudiante: mapFotoPerfilToFotoUrl(item.estudiante),

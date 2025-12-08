@@ -1,3 +1,8 @@
+/**
+ * ConfirmModal - Modal de confirmación para acciones importantes (eliminar cuenta, cerrar sesión, etc.).
+ * Wrapper del componente Modal con botones de acción personalizables.
+ */
+
 import { Modal } from './index';
 import './ConfirmModal.css';
 

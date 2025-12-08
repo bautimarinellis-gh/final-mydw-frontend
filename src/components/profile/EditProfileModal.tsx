@@ -1,3 +1,8 @@
+/**
+ * EditProfileModal - Modal para editar perfil (foto, descripción, intereses).
+ * Incluye validación con Zod, preview de imagen y gestión de intereses con límite de 5.
+ */
+
 import { useState, useEffect } from 'react';
 import { z, type ZodIssue } from 'zod';
 import Modal from '../Modal';

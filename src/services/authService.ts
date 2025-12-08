@@ -1,3 +1,8 @@
+/**
+ * authService.ts - Servicio de autenticación con login tradicional, registro, OAuth con Google y gestión de sesión.
+ * Normaliza campos de imagen del backend (fotoPerfil → fotoUrl) y maneja localStorage.
+ */
+
 import axios from 'axios';
 import { signInWithPopup } from 'firebase/auth';
 import api from './api';
@@ -11,13 +16,11 @@ import type {
 } from '../types';
 import { auth, googleProvider } from '../config/firebaseClient';
 
-// Tipo para representar el usuario tal como viene del backend (puede tener fotoPerfil)
 type UsuarioBackend = Omit<Usuario, 'fotoUrl'> & {
   fotoUrl?: string;
   fotoPerfil?: string;
 };
 
-// Función helper para normalizar el usuario del backend al formato del frontend
 const normalizeUser = (user: UsuarioBackend): Usuario => {
   return {
     ...user,
@@ -29,7 +32,6 @@ const saveAuthData = (accessToken: string, user: Usuario) => {
   try {
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(USER_KEY, JSON.stringify(user));
-    // refreshToken se maneja mediante cookies HTTP-only del backend
   } catch (error) {
     console.error('No se pudo guardar la sesión en localStorage:', error);
   }
@@ -55,27 +57,17 @@ const getLocalAccessToken = (): string | null => {
 };
 
 export const authService = {
-  // Iniciar sesión
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/api/auth/login', credentials);
     const { accessToken, user } = response.data;
-    
-    // Normalizar usuario del backend al formato del frontend
     const normalizedUser = normalizeUser(user as UsuarioBackend);
-    
-    // refreshToken se guarda automáticamente en cookie HTTP-only por el backend
     saveAuthData(accessToken, normalizedUser);
     return { ...response.data, user: normalizedUser };
   },
 
-  // Registrar nuevo usuario
   register: async (userData: RegisterRequest): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/api/auth/register', userData);
-    // Guardar accessToken si el backend lo devuelve en el registro
-    // refreshToken se guarda automáticamente en cookie HTTP-only por el backend
     const { accessToken, user } = response.data;
-    
-    // Normalizar usuario del backend al formato del frontend
     const normalizedUser = normalizeUser(user as UsuarioBackend);
     
     if (accessToken) {
@@ -84,7 +76,6 @@ export const authService = {
     return { ...response.data, user: normalizedUser };
   },
 
-  // Cerrar sesión
   logout: async (): Promise<void> => {
     try {
       await api.post('/api/auth/logout');
@@ -95,21 +86,13 @@ export const authService = {
     }
   },
 
-  // Refrescar token - DESHABILITADO
   refreshToken: async (): Promise<string> => {
-    // const response = await api.post<{ accessToken: string }>('/api/auth/refresh');
-    // const { accessToken } = response.data;
-    // localStorage.setItem('accessToken', accessToken);
-    // return accessToken;
     throw new Error('Token refresh deshabilitado');
   },
 
-  // Obtener usuario actual desde el backend
   getCurrentUser: async (): Promise<Usuario> => {
     try {
       const response = await api.get<{ user: UsuarioBackend }>('/api/auth/me');
-      
-      // Normalizar usuario del backend al formato del frontend
       const normalizedUser = normalizeUser(response.data.user);
       
       try {
@@ -119,7 +102,6 @@ export const authService = {
       }
       return normalizedUser;
     } catch (error: unknown) {
-      // Si la cuenta está desactivada, el backend devuelve 403 con código ACCOUNT_DEACTIVATED
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         const data = error.response.data as { code?: string; message?: string };
         if (data.code === 'ACCOUNT_DEACTIVATED') {
@@ -133,12 +115,10 @@ export const authService = {
     }
   },
 
-  // Verificar si el usuario está autenticado
   isAuthenticated: (): boolean => {
     return !!getLocalAccessToken();
   },
 
-  // Obtener usuario desde localStorage
   getLocalUser: (): Usuario | null => {
     let userStr: string | null = null;
 
@@ -159,11 +139,9 @@ export const authService = {
     return null;
   },
 
-  // Actualizar perfil del usuario
   updateProfile: async (profileData: Partial<Usuario>): Promise<Usuario> => {
     const response = await api.patch<{ user: UsuarioBackend } | UsuarioBackend>('/api/auth/profile', profileData);
     
-    // Manejar diferentes estructuras de respuesta
     let updatedUser: UsuarioBackend;
     if ('user' in response.data && response.data.user) {
       updatedUser = response.data.user;
@@ -173,7 +151,6 @@ export const authService = {
       throw new Error('El backend no devolvió datos del usuario actualizado');
     }
     
-    // Normalizar usuario del backend al formato del frontend
     const normalizedUser = normalizeUser(updatedUser);
     
     try {
@@ -184,19 +161,16 @@ export const authService = {
     return normalizedUser;
   },
 
-  // Subir imagen de perfil
   uploadProfileImage: async (file: File): Promise<{ user: Usuario; imageUrl: string }> => {
     const formData = new FormData();
     formData.append('image', file);
 
-    // Validar tipo de archivo
     const allowedTypes = ['image/png', 'image/svg+xml', 'image/jpeg', 'image/jpg'];
     if (!allowedTypes.includes(file.type)) {
       throw new Error('Solo se permiten archivos PNG, SVG y JPG');
     }
 
-    // Validar tamaño (5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       throw new Error('El archivo es demasiado grande. Tamaño máximo: 5MB');
     }
@@ -206,17 +180,14 @@ export const authService = {
         message: string; 
         user: Usuario; 
         imageUrl: string;
-        // El backend puede devolver fotoPerfil en lugar de fotoUrl en el objeto user
       }>('/api/auth/upload-profile-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      // Normalizar usuario del backend al formato del frontend
       const normalizedUser = normalizeUser(response.data.user as UsuarioBackend);
 
-      // Actualizar usuario en localStorage
       try {
         localStorage.setItem(USER_KEY, JSON.stringify(normalizedUser));
       } catch (error) {
@@ -235,7 +206,6 @@ export const authService = {
     }
   },
 
-  // Desactivar cuenta
   deactivateAccount: async (): Promise<void> => {
     try {
       await api.patch('/api/auth/me/deactivate');
@@ -247,7 +217,6 @@ export const authService = {
     }
   },
 
-  // Eliminar cuenta
   deleteAccount: async (): Promise<void> => {
     try {
       await api.delete('/api/auth/me');
@@ -259,11 +228,8 @@ export const authService = {
     }
   },
 
-  // Autenticación con Google
   loginWithGoogle: async (googleData: GoogleLoginRequest = {}): Promise<AuthResponse> => {
     try {
-      // Cerrar sesión de Firebase si existe una sesión activa para permitir seleccionar otra cuenta
-      // Esto es especialmente importante en el flujo de registro
       try {
         const currentUser = auth.currentUser;
         if (currentUser) {
@@ -283,11 +249,9 @@ export const authService = {
 
       const idToken = await firebaseUser.getIdToken();
 
-      // Extraer información del usuario de Google
       const displayName = firebaseUser.displayName || '';
       const photoURL = firebaseUser.photoURL || '';
       
-      // Dividir nombre completo en nombre y apellido
       let nombre = '';
       let apellido = '';
       if (displayName) {
@@ -296,7 +260,6 @@ export const authService = {
         apellido = nameParts.slice(1).join(' ') || '';
       }
 
-      // Construir payload con todos los datos disponibles
       const payload: {
         idToken: string;
         carrera?: string;
@@ -320,8 +283,6 @@ export const authService = {
         payload.edad = googleData.edad;
       }
 
-      // Agregar datos del usuario de Google (nombre, apellido, foto)
-      // Si vienen del formulario, usar esos; si no, usar los de Google
       if (googleData.nombre) {
         payload.nombre = googleData.nombre;
       } else if (nombre) {
@@ -347,14 +308,12 @@ export const authService = {
 
       return { ...response.data, user: normalizedUser };
     } catch (error: unknown) {
-      // Si Firebase ya autenticó al usuario pero falla el backend, cerramos la sesión de Firebase
       try {
         await auth.signOut();
       } catch (signOutError) {
         console.warn('No se pudo cerrar sesión en Firebase:', signOutError);
       }
       
-      // Mejorar mensajes de error específicos de Firebase
       if (error && typeof error === 'object' && 'code' in error && error.code === 'auth/configuration-not-found') {
         throw new Error('La autenticación de Google no está habilitada en Firebase Console. Por favor, habilítala en Authentication > Sign-in method > Google.');
       }

@@ -1,3 +1,8 @@
+/**
+ * MatchesPage - Pantalla que muestra matches confirmados y likes enviados.
+ * Ofrece dos tabs para ver conexiones mutuas (matches) y likes pendientes (sin respuesta).
+ */
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 

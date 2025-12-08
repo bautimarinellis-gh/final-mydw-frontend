@@ -1,3 +1,8 @@
+/**
+ * DiscoverPage - Pantalla principal para descubrir y hacer match con otros estudiantes.
+ * Incluye swipe (like/dislike), navegación de historial, filtros avanzados y notificaciones de match.
+ */
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { StudentCard, SwipeButtons, LoadingSpinner, EmptyDiscoverState, NavigationBar, BackgroundPattern, ArrowLeftIcon, ArrowRightIcon, MatchModal, ThemeToggle } from '../components';
 import { discoverService } from '../services';

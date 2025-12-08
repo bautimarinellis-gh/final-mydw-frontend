@@ -1,3 +1,8 @@
+/**
+ * MatchCard - Tarjeta de match con foto, información y acciones (chatear/ver perfil).
+ * Incluye badge "Nuevo" para matches recientes y animaciones con framer-motion.
+ */
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';

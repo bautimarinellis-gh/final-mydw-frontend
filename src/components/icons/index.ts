@@ -1,3 +1,8 @@
+/**
+ * index.ts - Exportaciones de todos los iconos SVG de la aplicación.
+ * Cada icono es un componente React con props configurables (size, color, className).
+ */
+
 export { default as FireIcon } from './FireIcon';
 export { default as ChatIcon } from './ChatIcon';
 export { default as UserIcon } from './UserIcon';

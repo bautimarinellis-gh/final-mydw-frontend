@@ -1,3 +1,8 @@
+/**
+ * ProfilePage - Pantalla de perfil del usuario autenticado.
+ * Permite editar datos personales, subir foto, gestionar la cuenta (desactivar/eliminar) y cerrar sesión.
+ */
+
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { NavigationBar, LoadingSpinner, BackgroundPattern, LocationIcon, GraduationIcon, AboutMe, Interests, EditProfileModal, BrokenHeartIcon, ConfirmModal, ThemeToggle } from '../components';

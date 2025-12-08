@@ -1,3 +1,8 @@
+/**
+ * AboutMe - Sección "Acerca de mí" del perfil de usuario con descripción o placeholder.
+ * Muestra texto descriptivo o invitación a agregar información si está vacío.
+ */
+
 import { WriteIcon } from '../icons';
 import './AboutMe.css';
 

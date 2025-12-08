@@ -1,3 +1,8 @@
+/**
+ * EmptyDiscoverState - Estado vacío específico de DiscoverPage cuando no hay más perfiles por ver.
+ * Incluye ilustración, mensaje amigable y botón de recarga.
+ */
+
 import './EmptyDiscoverState.css';
 
 interface EmptyDiscoverStateProps {

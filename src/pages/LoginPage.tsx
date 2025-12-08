@@ -1,3 +1,8 @@
+/**
+ * LoginPage - Pantalla de inicio de sesión con autenticación tradicional (email/contraseña) y OAuth con Google.
+ * Incluye validación de formulario y manejo de errores.
+ */
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BackgroundPattern, EyeIcon, EyeOffIcon, UniversityHeartIcon, ThemeToggle } from '../components';

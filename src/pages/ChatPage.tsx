@@ -1,3 +1,8 @@
+/**
+ * ChatPage - Pantalla de chat para conversaciones individuales entre matches.
+ * Gestiona mensajes en tiempo real mediante WebSocket, scroll infinito y actualizaciones optimistas.
+ */
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { chatService, authService } from '../services';
