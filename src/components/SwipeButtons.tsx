@@ -1,3 +1,8 @@
+/**
+ * SwipeButtons - Botones de acción para like/dislike en DiscoverPage.
+ * Incluye animaciones visuales de feedback al hacer click.
+ */
+
 import { useState } from 'react';
 import { CloseIcon, HeartIcon } from './icons';
 import './SwipeButtons.css';

@@ -1,3 +1,8 @@
+/**
+ * auth-context.ts - Define el contexto de autenticación con su interfaz y tipos.
+ * Contiene la firma de todos los métodos disponibles para gestionar la sesión del usuario.
+ */
+
 import { createContext } from 'react';
 import type { Usuario, LoginRequest, RegisterRequest, GoogleLoginRequest } from '../../types';
 

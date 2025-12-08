@@ -1,3 +1,8 @@
+/**
+ * auth-provider.tsx - Proveedor del contexto de autenticación que gestiona el estado global del usuario.
+ * Maneja login, registro, logout, actualización de perfil y sincronización con localStorage.
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../../services';

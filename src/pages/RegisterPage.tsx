@@ -1,3 +1,8 @@
+/**
+ * RegisterPage - Pantalla de registro en dos pasos: datos básicos (paso 1) y perfil opcional (paso 2).
+ * Soporta registro tradicional y OAuth con Google, con validaciones completas y subida de foto de perfil.
+ */
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BackgroundPattern, InterestTag, UniversityHeartIcon, ThemeToggle } from '../components';

@@ -1,3 +1,8 @@
+/**
+ * Interests - Sección de intereses del perfil con lista de tags o placeholder.
+ * Muestra hasta 5 intereses del usuario o invitación a agregar si está vacío.
+ */
+
 import InterestTag from '../InterestTag';
 import { SearchIcon } from '../icons';
 import './Interests.css';

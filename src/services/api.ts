@@ -1,15 +1,19 @@
+/**
+ * api.ts - Cliente HTTP configurado con Axios, interceptores para autenticación y refresh automático de tokens.
+ * Maneja renovación transparente de access tokens mediante refresh tokens en cookies HTTP-only.
+ */
+
 import axios from 'axios';
 import { ACCESS_TOKEN_KEY, USER_KEY } from '../constants/storage';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-// Crear instancia de axios con configuración base
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // IMPORTANTE: Necesario para cookies (refresh token)
+  withCredentials: true,
 });
 
 const getStoredToken = (): string | null => {
@@ -25,7 +29,6 @@ const getStoredToken = (): string | null => {
   }
 };
 
-// Interceptor para adjuntar token a las peticiones
 api.interceptors.request.use(
   (config) => {
     const token = getStoredToken();
@@ -40,7 +43,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Variables para manejar la cola de peticiones durante el refresh
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value?: string | null) => void;
@@ -59,23 +61,19 @@ const processQueue = (error: unknown | null, token: string | null = null) => {
   failedQueue = [];
 };
 
-// Interceptor para manejar errores 401 y refrescar el token automáticamente
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Si el error es 401 y no es una petición de refresh ni ya se intentó refrescar
-    // También excluir login y register, ya que estos errores deben mostrarse directamente
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url?.includes('/api/auth/refresh') &&
       !originalRequest.url?.includes('/api/auth/login') &&
       !originalRequest.url?.includes('/api/auth/register')
-    ) {
+      ) {
       if (isRefreshing) {
-        // Si ya se está refrescando, esperar en la cola
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -92,18 +90,16 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Intentar renovar el token
         const response = await axios.post(
           `${API_URL}/api/auth/refresh`,
           {},
           {
-            withCredentials: true, // IMPORTANTE: Para enviar la cookie del refresh token
+            withCredentials: true,
           }
         );
 
         const { accessToken } = response.data;
 
-        // Guardar el nuevo token
         if (typeof window !== 'undefined') {
           try {
             localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
@@ -112,21 +108,15 @@ api.interceptors.response.use(
           }
         }
 
-        // Actualizar el header de la petición original
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-
-        // Procesar la cola de peticiones pendientes
         processQueue(null, accessToken);
         isRefreshing = false;
 
-        // Reintentar la petición original
         return api(originalRequest);
       } catch (refreshError) {
-        // Si el refresh falla, limpiar todo y redirigir al login
         processQueue(refreshError, null);
         isRefreshing = false;
 
-        // Limpiar localStorage
         if (typeof window !== 'undefined') {
           try {
             localStorage.removeItem(ACCESS_TOKEN_KEY);
@@ -135,7 +125,6 @@ api.interceptors.response.use(
             console.error('No se pudo limpiar localStorage:', storageError);
           }
 
-          // Redirigir al login (ajusta según tu router)
           if (window.location.pathname !== '/login') {
             window.location.href = '/login';
           }
@@ -145,7 +134,6 @@ api.interceptors.response.use(
       }
     }
 
-    // Para otros errores, solo loguear y rechazar
     console.error('Error en petición:', error.response?.data?.message || error.message);
     return Promise.reject(error);
   }

@@ -1,8 +1,9 @@
 /**
- * Lista de sedes disponibles de la Universidad Abierta Interamericana
+ * sedes.ts - Lista de sedes disponibles de la Universidad Abierta Interamericana (UAI).
+ * Incluye sedes de Buenos Aires y Rosario para registro y filtros.
  */
+
 export const SEDES = [
-  // Buenos Aires
   'BA - Centro',
   'BA - Humberto Pino',
   'BA - Piedras',
@@ -14,7 +15,6 @@ export const SEDES = [
   'BA - Ituzaingó',
   'BA - Ituzaingó II',
   'BA - Tigre',
-  // Rosario
   'ROS - Roca',
 ];
 

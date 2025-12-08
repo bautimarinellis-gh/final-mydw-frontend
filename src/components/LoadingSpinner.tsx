@@ -1,3 +1,8 @@
+/**
+ * LoadingSpinner - Indicador de carga animado reutilizable.
+ * Se muestra mientras se cargan datos del servidor.
+ */
+
 import './LoadingSpinner.css';
 
 const LoadingSpinner = () => {

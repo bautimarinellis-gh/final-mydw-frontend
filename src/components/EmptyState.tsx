@@ -1,3 +1,8 @@
+/**
+ * EmptyState - Componente genérico para estados vacíos con mensaje personalizable.
+ * Usado cuando no hay datos para mostrar en listas o secciones.
+ */
+
 import './EmptyState.css';
 
 interface EmptyStateProps {

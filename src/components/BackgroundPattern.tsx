@@ -1,3 +1,8 @@
+/**
+ * BackgroundPattern - Patrón de fondo decorativo con iconos universitarios (libros, corazones, cafés).
+ * Se utiliza como fondo visual en varias páginas de la aplicación.
+ */
+
 import './BackgroundPattern.css';
 
 const BackgroundPattern = () => {

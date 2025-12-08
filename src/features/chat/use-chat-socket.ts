@@ -1,3 +1,8 @@
+/**
+ * use-chat-socket.ts - Hook para gestionar la conexión WebSocket del chat en tiempo real.
+ * Maneja conexión/reconexión automática, renovación de tokens y emisión/recepción de mensajes.
+ */
+
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { ACCESS_TOKEN_KEY } from '../../constants/storage';

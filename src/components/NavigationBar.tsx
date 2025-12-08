@@ -1,3 +1,8 @@
+/**
+ * NavigationBar - Barra de navegación inferior con 3 secciones (Descubrir, Matches, Perfil).
+ * Se oculta cuando hay modales abiertos para mejorar la experiencia del usuario.
+ */
+
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FireIcon, HeartIcon, UserIcon } from './icons';
 import './NavigationBar.css';

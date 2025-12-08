@@ -1,3 +1,8 @@
+/**
+ * InterestTag - Tag o chip para mostrar un interés individual del estudiante.
+ * Componente reutilizable usado en perfiles y tarjetas de usuario.
+ */
+
 import './InterestTag.css';
 
 interface InterestTagProps {

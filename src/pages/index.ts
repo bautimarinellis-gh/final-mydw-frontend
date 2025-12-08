@@ -1,3 +1,7 @@
+/**
+ * index.ts - Punto de exportación centralizado para todas las páginas de la aplicación.
+ */
+
 export { default as DiscoverPage } from './DiscoverPage';
 export { default as MatchesPage } from './MatchesPage';
 export { default as ProfilePage } from './ProfilePage';

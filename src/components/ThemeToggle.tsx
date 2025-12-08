@@ -1,3 +1,8 @@
+/**
+ * ThemeToggle - Botón flotante para alternar entre modo claro y oscuro.
+ * Se muestra en todas las páginas principales con iconos de sol/luna.
+ */
+
 import { useTheme } from '../features/theme';
 import { SunIcon, MoonIcon } from './icons';
 import './ThemeToggle.css';

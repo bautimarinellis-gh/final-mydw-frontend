@@ -1,6 +1,8 @@
 /**
- * Lista de facultades disponibles en la Universidad Abierta Interamericana
+ * carreras.ts - Lista de carreras disponibles en la Universidad Abierta Interamericana (UAI).
+ * Usada en formularios de registro y filtros de búsqueda.
  */
+
 export const CARRERAS = [
   'Arquitectura',
   'Ciencias de la Comunicación',

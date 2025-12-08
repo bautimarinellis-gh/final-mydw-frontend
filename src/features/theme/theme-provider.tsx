@@ -1,3 +1,8 @@
+/**
+ * theme-provider.tsx - Proveedor del contexto de temas que gestiona el modo claro/oscuro.
+ * Persiste la preferencia del usuario en localStorage y aplica estilos CSS correspondientes.
+ */
+
 import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { ThemeContext } from './theme-context';
@@ -6,7 +11,6 @@ type Theme = 'light' | 'dark';
 
 const THEME_STORAGE_KEY = 'tinder-uai-theme';
 
-// Obtener tema inicial desde localStorage o usar 'light' por defecto
 const getInitialTheme = (): Theme => {
   if (typeof window !== 'undefined') {
     const storedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme;

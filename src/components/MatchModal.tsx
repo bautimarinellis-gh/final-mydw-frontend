@@ -1,3 +1,8 @@
+/**
+ * MatchModal - Modal de celebración que se muestra cuando hay un nuevo match.
+ * Incluye animaciones con framer-motion y cierre con Escape/click fuera.
+ */
+
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GraduationIcon from './icons/GraduationIcon';

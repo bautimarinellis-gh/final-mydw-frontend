@@ -1,3 +1,8 @@
+/**
+ * StudentDetailModal - Modal con información completa del estudiante (foto, datos, descripción, intereses).
+ * Se abre desde StudentCard o MatchCard para ver el perfil detallado.
+ */
+
 import { Modal, InterestTag, GraduationIcon, LocationIcon } from './index';
 import { getProfileImageUrl } from '../utils/image';
 import type { Usuario } from '../types';
