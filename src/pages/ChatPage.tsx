@@ -21,11 +21,35 @@ const ChatPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [mensajeTexto, setMensajeTexto] = useState('');
   const [enviando, setEnviando] = useState(false);
+
+  // 🔹 Alto visible real del viewport (fix Safari)
+  const [viewportHeight, setViewportHeight] = useState<number | undefined>(undefined);
   
   const mensajesContainerRef = useRef<HTMLDivElement>(null);
   const scrollPositionRef = useRef<number>(0);
   const isScrollingUpRef = useRef(false);
   const currentUserId = authService.getLocalUser()?.id;
+
+  // 🔹 Actualizar alto visible usando visualViewport (iOS Safari) o innerHeight
+  useEffect(() => {
+    const updateHeight = () => {
+      if (typeof window === 'undefined') return;
+      const vh = window.visualViewport?.height ?? window.innerHeight;
+      setViewportHeight(vh);
+    };
+
+    updateHeight();
+
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('orientationchange', updateHeight);
+    window.visualViewport?.addEventListener('resize', updateHeight);
+
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      window.removeEventListener('orientationchange', updateHeight);
+      window.visualViewport?.removeEventListener('resize', updateHeight);
+    };
+  }, []);
 
   // Cargar conversación inicial
   useEffect(() => {
@@ -74,14 +98,11 @@ const ChatPage = () => {
     }
 
     // Verificar si ya existe (evitar duplicados)
-    // Usar función de actualización para tener acceso al estado más reciente
     setMensajes(prev => {
       const existe = prev.some(m => m.id === mensaje.id);
       
       if (existe) {
-        // Actualizar mensaje existente (por si cambió el estado de leído, etc.)
         const actualizados = prev.map(m => m.id === mensaje.id ? mensaje : m);
-        // Reordenar después de actualizar
         return actualizados.sort((a, b) => {
           const timeA = typeof a.createdAt === 'string' 
             ? new Date(a.createdAt).getTime()
@@ -92,7 +113,6 @@ const ChatPage = () => {
           return timeA - timeB;
         });
       } else {
-        // Agregar nuevo mensaje y ordenar por timestamp
         const nuevos = [...prev, mensaje];
         return nuevos.sort((a, b) => {
           const timeA = typeof a.createdAt === 'string' 
@@ -122,7 +142,6 @@ const ChatPage = () => {
   // Manejar errores de WebSocket
   const handleSocketError = useCallback((error: Error) => {
     console.error('Error de WebSocket:', error);
-    // No mostrar error al usuario a menos que sea crítico
   }, []);
 
   // Configurar WebSocket
@@ -152,12 +171,10 @@ const ChatPage = () => {
         return;
       }
 
-      // Guardar posición del scroll antes de agregar mensajes
       if (mensajesContainerRef.current) {
         scrollPositionRef.current = mensajesContainerRef.current.scrollHeight;
       }
 
-      // Agregar mensajes antiguos al inicio
       setMensajes(prev => [...data.mensajes, ...prev]);
       setHasMore(data.mensajes.length + mensajes.length < data.total);
     } catch (err: unknown) {
@@ -174,10 +191,8 @@ const ChatPage = () => {
     const container = mensajesContainerRef.current;
     const scrollTop = container.scrollTop;
     
-    // Detectar si el usuario está haciendo scroll hacia arriba
     isScrollingUpRef.current = scrollTop < 100;
 
-    // Si está cerca del top y hay más mensajes, cargar más
     if (scrollTop < 100 && hasMore && !loadingMore) {
       loadMoreMessages();
     }
@@ -204,7 +219,6 @@ const ChatPage = () => {
     setMensajeTexto('');
     setEnviando(true);
 
-    // Crear mensaje optimista
     const mensajeOptimista: Mensaje = {
       id: `temp-${Date.now()}`,
       contenido,
@@ -215,7 +229,6 @@ const ChatPage = () => {
       createdAt: new Date().toISOString(),
     };
 
-    // Agregar mensaje optimista
     setMensajesOptimistas(prev => {
       const nuevo = new Map(prev);
       nuevo.set(mensajeOptimista.id, mensajeOptimista);
@@ -223,7 +236,6 @@ const ChatPage = () => {
     });
     setMensajes(prev => {
       const nuevos = [...prev, mensajeOptimista];
-      // Ordenar por timestamp
       return nuevos.sort((a, b) => {
         const timeA = typeof a.createdAt === 'string' 
           ? new Date(a.createdAt).getTime()
@@ -242,7 +254,6 @@ const ChatPage = () => {
         contenido,
       });
 
-      // Reemplazar mensaje optimista con el mensaje real
       setMensajesOptimistas(prev => {
         const nuevo = new Map(prev);
         nuevo.delete(mensajeOptimista.id);
@@ -252,7 +263,6 @@ const ChatPage = () => {
         const actualizados = prev.map(m => 
           m.id === mensajeOptimista.id ? mensajeEnviado : m
         );
-        // Reordenar después de reemplazar
         return actualizados.sort((a, b) => {
           const timeA = typeof a.createdAt === 'string' 
             ? new Date(a.createdAt).getTime()
@@ -266,7 +276,6 @@ const ChatPage = () => {
     } catch (err: unknown) {
       console.error('Error al enviar mensaje:', err);
       
-      // Remover mensaje optimista en caso de error
       setMensajesOptimistas(prev => {
         const nuevo = new Map(prev);
         nuevo.delete(mensajeOptimista.id);
@@ -274,7 +283,6 @@ const ChatPage = () => {
       });
       setMensajes(prev => prev.filter(m => m.id !== mensajeOptimista.id));
       
-      // Mostrar error
       const errorMessage = getErrorMessage(err, 'No se pudo enviar el mensaje');
       setError(errorMessage);
       setTimeout(() => setError(null), 5000);
@@ -283,12 +291,10 @@ const ChatPage = () => {
     }
   };
 
-  // Obtener iniciales para foto
   const getInitials = (nombre: string, apellido: string) => {
     return `${nombre[0]}${apellido[0]}`.toUpperCase();
   };
 
-  // Formatear fecha del mensaje
   const formatMessageTime = (date: string | Date) => {
     const fecha = typeof date === 'string' ? new Date(date) : date;
     const ahora = new Date();
@@ -305,9 +311,14 @@ const ChatPage = () => {
     return fecha.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
   };
 
+  // 🔹 Estilo común para todas las variantes de .chat-page
+  const pageStyle = viewportHeight
+    ? { height: `${viewportHeight}px` }
+    : undefined;
+
   if (loading) {
     return (
-      <div className="chat-page">
+      <div className="chat-page" style={pageStyle}>
         <div className="chat-loading">
           <LoadingSpinner />
         </div>
@@ -317,7 +328,7 @@ const ChatPage = () => {
 
   if (error && !conversacion) {
     return (
-      <div className="chat-page">
+      <div className="chat-page" style={pageStyle}>
         <div className="chat-error">
           <p>{error}</p>
           <button onClick={() => navigate('/matches')} className="chat-error-button">
@@ -333,14 +344,13 @@ const ChatPage = () => {
   }
 
   const { usuario } = conversacion;
-  // Eliminar duplicados por ID para evitar keys duplicadas en React
   const mensajesUnicos = Array.from(
     new Map(mensajes.map(m => [m.id, m])).values()
   );
   const todosLosMensajes = mensajesUnicos;
 
   return (
-    <div className="chat-page">
+    <div className="chat-page" style={pageStyle}>
       {/* Header */}
       <header className="chat-header">
         <button 
@@ -463,4 +473,3 @@ const ChatPage = () => {
 };
 
 export default ChatPage;
-
