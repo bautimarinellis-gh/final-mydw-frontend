@@ -144,8 +144,8 @@ const EditProfileModal = ({ isOpen, onClose, user, onSave }: EditProfileModalPro
     }
 
     const data = {
-      descripcion: descripcion || undefined,
-      intereses: intereses.length > 0 ? intereses : undefined,
+      descripcion: descripcion,
+      intereses: intereses.length > 0 ? intereses : [], 
     };
 
     const validation = profileUpdateSchema.safeParse(data);
