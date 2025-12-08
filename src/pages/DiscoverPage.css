@@ -30,7 +30,6 @@
   font-weight: 500;
 }
 
-
 .discover-content {
   padding: 0 80px;
   max-width: 500px;
@@ -229,4 +228,27 @@
   background: #27272f;
   border-color: #e11d48;
   color: #e5e7eb;
+}
+
+[data-theme="light"] .discover-filters {
+  border-width: 2px;
+  border-color: rgba(15, 23, 42, 0.14); /* más contraste */
+  background: #ffffff;
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="light"] .discover-filter-select,
+[data-theme="light"] .discover-filter-input {
+  background: #f9fafb;
+  border-color: rgba(15, 23, 42, 0.18); /* borde más marcado */
+}
+
+[data-theme="light"] .discover-filter-reset {
+  border-color: rgba(15, 23, 42, 0.18);
+  background: #ffffff;
+}
+
+[data-theme="light"] .discover-filter-reset:hover {
+  background: #f9fafb;
+  border-color: var(--color-primary);
 }
