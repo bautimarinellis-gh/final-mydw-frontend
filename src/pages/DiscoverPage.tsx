@@ -292,7 +292,7 @@ const DiscoverPage = () => {
 
           <input
             type="text"
-            placeholder="Buscar por nombre o descripción..."
+            placeholder="Buscar por nombre o descrip."
             value={searchFilter}
             onChange={e => setSearchFilter(e.target.value)}
             className="discover-filter-input"
