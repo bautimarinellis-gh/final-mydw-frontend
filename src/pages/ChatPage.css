@@ -1,15 +1,11 @@
 .chat-page {
   display: flex;
   flex-direction: column;
-  /* combinación segura: min-height + height, pero luego el inline-style del TSX manda */
-  min-height: 100vh;
-  height: 100dvh;
   background-color: var(--color-background);
   overflow: hidden;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Loading y Error States */
 .chat-loading,
 .chat-error {
   display: flex;
@@ -44,7 +40,6 @@
   background-color: var(--color-primary-hover);
 }
 
-/* Header */
 .chat-header {
   display: flex;
   align-items: center;
@@ -122,7 +117,6 @@
   color: var(--color-text-tertiary);
 }
 
-/* Mensajes */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -131,6 +125,9 @@
   flex-direction: column;
   gap: 8px;
   scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
 }
 
 .chat-loading-more {
@@ -222,7 +219,6 @@
   font-size: 12px;
 }
 
-/* Input Container */
 .chat-input-container {
   display: flex;
   align-items: center;
@@ -231,8 +227,11 @@
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
   background-color: var(--color-white);
   border-top: 1px solid var(--color-border);
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
+
   z-index: 100;
 }
 
@@ -247,6 +246,7 @@
   color: var(--color-text-primary);
   outline: none;
   transition: border-color 0.2s, background-color 0.2s;
+  scroll-margin-bottom: 80px;
 }
 
 .chat-input:focus {
@@ -297,7 +297,6 @@
   height: 20px;
 }
 
-/* Error Banner */
 .chat-error-banner {
   position: fixed;
   bottom: calc(80px + env(safe-area-inset-bottom));
@@ -327,7 +326,6 @@
   }
 }
 
-/* Scrollbar personalizado */
 .chat-messages::-webkit-scrollbar {
   width: 6px;
 }
@@ -345,7 +343,6 @@
   background-color: rgba(0, 0, 0, 0.3);
 }
 
-/* Responsive */
 @media (max-width: 480px) {
   .chat-message-bubble {
     max-width: 85%;
@@ -357,6 +354,7 @@
   
   .chat-messages {
     padding: 12px;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
   }
   
   .chat-input-container {
@@ -365,12 +363,9 @@
   }
 }
 
-/* Soporte explícito para 100dvh donde esté disponible */
 @supports (height: 100dvh) {
   .chat-page {
-    height: 100dvh;
   }
-
   .chat-loading,
   .chat-error {
     height: 100dvh;

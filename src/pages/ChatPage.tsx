@@ -29,6 +29,9 @@ const ChatPage = () => {
 
   // 🔹 Alto visible real del viewport (fix Safari)
   const [viewportHeight, setViewportHeight] = useState<number | undefined>(undefined);
+
+  // 🔹 Offset inferior real (cuando iOS Safari muestra barra/teclado)
+  const [viewportOffsetBottom, setViewportOffsetBottom] = useState(0);
   
   const mensajesContainerRef = useRef<HTMLDivElement>(null);
   const scrollPositionRef = useRef<number>(0);
@@ -39,8 +42,17 @@ const ChatPage = () => {
   useEffect(() => {
     const updateHeight = () => {
       if (typeof window === 'undefined') return;
-      const vh = window.visualViewport?.height ?? window.innerHeight;
+
+      const vv = window.visualViewport;
+      const vh = vv?.height ?? window.innerHeight;
+
+      // ✅ Cuánto “se come” desde abajo la UI del navegador/teclado
+      const offsetBottom = vv
+        ? Math.max(0, window.innerHeight - (vv.height + vv.offsetTop))
+        : 0;
+
       setViewportHeight(vh);
+      setViewportOffsetBottom(offsetBottom);
     };
 
     updateHeight();
@@ -48,11 +60,13 @@ const ChatPage = () => {
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
     window.visualViewport?.addEventListener('resize', updateHeight);
+    window.visualViewport?.addEventListener('scroll', updateHeight); // 👈 clave en iOS Safari
 
     return () => {
       window.removeEventListener('resize', updateHeight);
       window.removeEventListener('orientationchange', updateHeight);
       window.visualViewport?.removeEventListener('resize', updateHeight);
+      window.visualViewport?.removeEventListener('scroll', updateHeight);
     };
   }, []);
 
@@ -318,7 +332,10 @@ const ChatPage = () => {
 
   // 🔹 Estilo común para todas las variantes de .chat-page
   const pageStyle = viewportHeight
-    ? { height: `${viewportHeight}px` }
+    ? {
+        height: `${viewportHeight}px`,
+        paddingBottom: `${viewportOffsetBottom}px`,
+      }
     : undefined;
 
   if (loading) {
