@@ -201,7 +201,7 @@ const ProfilePage = () => {
           <div className="profile-header-social">
             <div className="profile-avatar">
               {user.fotoUrl ? (
-                <img src={getProfileImageUrl(user.fotoUrl) || ''} alt={`${user.nombre} ${user.apellido}`} />
+                <img src={getProfileImageUrl(user.fotoUrl, 600) || ''} alt={`${user.nombre} ${user.apellido}`} />
               ) : (
                 <span>{getInitials()}</span>
               )}

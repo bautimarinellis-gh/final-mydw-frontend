@@ -386,7 +386,7 @@ const ChatPage = () => {
         <div className="chat-header-user">
           {usuario.fotoUrl ? (
             <img
-              src={getProfileImageUrl(usuario.fotoUrl) || ''}
+              src={getProfileImageUrl(usuario.fotoUrl, 250) || ''}
               alt={`${usuario.nombre} ${usuario.apellido}`}
               className="chat-header-avatar"
             />

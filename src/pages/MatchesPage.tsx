@@ -31,7 +31,21 @@ const MatchesPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [openModalId, setOpenModalId] = useState<string | null>(null);
 
-  // Variantes de animación para el contenedor
+  const toCloudinaryHiRes = (url?: string | null): string | undefined => {
+    if (!url) return undefined;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) return url;
+
+    const isCloudinary =
+      url.includes('res.cloudinary.com') && url.includes('/upload/');
+    if (!isCloudinary) return url;
+
+    const parts = url.split('/upload/');
+    if (parts.length !== 2) return url;
+
+    const transform = 'f_auto,q_auto,c_fill,g_auto,w_300,h_300';
+    return `${parts[0]}/upload/${transform}/${parts[1]}`;
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -43,7 +57,6 @@ const MatchesPage = () => {
     },
   };
 
-  // Cargar matches + likes desde el backend
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,7 +72,9 @@ const MatchesPage = () => {
         setLikes(likesData);
       } catch (err: any) {
         console.error('Error cargando matches/likes:', err);
-        const msg = err?.response?.data?.message || 'No se pudieron cargar tus conexiones.';
+        const msg =
+          err?.response?.data?.message ||
+          'No se pudieron cargar tus conexiones.';
         setError(msg);
         setMatches([]);
         setLikes([]);
@@ -76,7 +91,6 @@ const MatchesPage = () => {
       <BackgroundPattern />
       <ThemeToggle />
       
-      {/* Header */}
       <div className="matches-header">
         <div className="matches-header-content">
           <h1 className="matches-title">
@@ -87,7 +101,8 @@ const MatchesPage = () => {
             <p className="matches-subtitle">Cargando...</p>
           ) : matches.length > 0 ? (
             <p className="matches-subtitle">
-              Tenés {matches.length} {matches.length === 1 ? 'match listo' : 'matches listos'} para chatear
+              Tenés {matches.length}{' '}
+              {matches.length === 1 ? 'match listo' : 'matches listos'} para chatear
             </p>
           ) : (
             <p className="matches-subtitle">
@@ -97,7 +112,6 @@ const MatchesPage = () => {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="matches-tabs">
         <button
           className={`matches-tab ${activeTab === 'matches' ? 'active' : ''}`}
@@ -113,7 +127,6 @@ const MatchesPage = () => {
         </button>
       </div>
 
-      {/* Contenido */}
       <div className="matches-content">
         {loading && <LoadingSpinner />}
 
@@ -187,7 +200,7 @@ const MatchesPage = () => {
                     <div className="match-like-avatar-wrapper">
                       <img
                         src={
-                          like.estudiante.fotoUrl ||
+                          toCloudinaryHiRes(like.estudiante.fotoUrl) ||
                           '/default-avatar.png'
                         }
                         alt={`${like.estudiante.nombre} ${like.estudiante.apellido}`}

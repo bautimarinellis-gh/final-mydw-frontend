@@ -1,20 +1,30 @@
 /**
  * Construye la URL completa de una imagen de perfil
- * Si la URL ya es completa (empieza con http), la devuelve tal cual
- * Si es relativa, la combina con la URL base del API
+ * - Soporta URLs locales
+ * - Optimiza imágenes de Cloudinary para evitar pixelado
  */
-export const getProfileImageUrl = (imageUrl: string | undefined | null): string | null => {
+export const getProfileImageUrl = (
+  imageUrl: string | undefined | null,
+  size: number = 400
+): string | null => {
   if (!imageUrl) {
     return null;
   }
 
-  // Si ya es una URL completa, devolverla tal cual
+  // Cloudinary: inyectar transformaciones de calidad
+  if (imageUrl.includes('res.cloudinary.com')) {
+    return imageUrl.replace(
+      '/upload/',
+      `/upload/c_fill,w_${size},h_${size},q_auto,f_auto/`
+    );
+  }
+
+  // URL absoluta (no Cloudinary)
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
     return imageUrl;
   }
 
-  // Si es una URL relativa, construir la URL completa
+  // URL relativa (backend propio)
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
   return `${API_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
 };
-

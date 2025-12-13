@@ -40,6 +40,21 @@ const DiscoverPage = () => {
   // ID del usuario actual desde el contexto
   const currentUserId = currentUser?.id || null;
 
+  // Mejora automática de calidad/tamaño para imágenes Cloudinary
+  const toCloudinaryHiRes = (url?: string | null): string | undefined => {
+    if (!url) return undefined;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) return url;
+
+    const isCloudinary = url.includes('res.cloudinary.com') && url.includes('/upload/');
+    if (!isCloudinary) return url;
+
+    const parts = url.split('/upload/');
+    if (parts.length !== 2) return url;
+
+    const transform = 'f_auto,q_auto,c_fill,g_auto,w_600,h_600';
+    return `${parts[0]}/upload/${transform}/${parts[1]}`;
+  };
+
   // Validar que el perfil no sea del usuario actual
   // NOTA: La validación de likes/dislikes previos debe estar implementada en el backend
   // Esta es solo una capa de seguridad adicional en el frontend
@@ -48,7 +63,7 @@ const DiscoverPage = () => {
     return profile.id !== currentUserId;
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
         const data = await discoverService.getFilterOptions();
@@ -73,7 +88,7 @@ const DiscoverPage = () => {
       setLoading(true);
       setError(null);
       setNoMoreProfiles(false);
-      
+
       // Si hemos intentado muchas veces, evitar loop infinito
       if (retryCount >= MAX_RETRIES) {
         console.error('Máximo de reintentos alcanzado. El backend puede estar devolviendo el mismo perfil.');
@@ -82,7 +97,7 @@ const DiscoverPage = () => {
         setLoading(false);
         return;
       }
-      
+
       const response = await discoverService.getNextProfile({
         sede: sedeFilter || undefined,
         carrera: carreraFilter || undefined,
@@ -91,7 +106,7 @@ const DiscoverPage = () => {
         edadMin: edadMinFilter || undefined,
         edadMax: edadMaxFilter || undefined,
       });
-      
+
       if (response.estudiante) {
         // Validar que no sea el propio perfil del usuario
         if (!isValidProfile(response.estudiante)) {
@@ -100,10 +115,13 @@ const DiscoverPage = () => {
           await loadNextProfile(retryCount + 1);
           return;
         }
-        
+
         // Si es válido, establecer el perfil
         maxRetriesRef.current = 0; // Resetear contador
-        setCurrentProfile(response.estudiante);
+        setCurrentProfile({
+          ...response.estudiante,
+          fotoUrl: toCloudinaryHiRes(response.estudiante.fotoUrl) as any,
+        });
         setNoMoreProfiles(false); // Asegurar que noMoreProfiles esté en false cuando hay perfil
       } else {
         // No hay más perfiles disponibles (ya se interactuó con todos o no hay usuarios)
@@ -118,7 +136,7 @@ const DiscoverPage = () => {
     } finally {
       setLoading(false);
     }
-  },[currentUserId, sedeFilter, carreraFilter, interesFilter, searchFilter, edadMinFilter, edadMaxFilter]);
+  }, [currentUserId, sedeFilter, carreraFilter, interesFilter, searchFilter, edadMinFilter, edadMaxFilter]);
 
   // Cargar perfil inicial cuando se tenga el ID del usuario actual
   useEffect(() => {
@@ -135,7 +153,7 @@ const DiscoverPage = () => {
 
     // Si estamos en un perfil nuevo (no en el historial), agregarlo al historial
     if (historyIndex === -1 && currentProfile) {
-      setProfileHistory(prev => [...prev, currentProfile]);
+      setProfileHistory(prev => [...prev, { ...currentProfile, fotoUrl: toCloudinaryHiRes(currentProfile.fotoUrl) as any }]);
     }
 
     // Cargar siguiente perfil
@@ -152,7 +170,10 @@ const DiscoverPage = () => {
       if (profileHistory.length > 0) {
         const newIndex = profileHistory.length - 1;
         setHistoryIndex(newIndex);
-        setCurrentProfile(profileHistory[newIndex]);
+        setCurrentProfile({
+          ...profileHistory[newIndex],
+          fotoUrl: toCloudinaryHiRes(profileHistory[newIndex].fotoUrl) as any,
+        });
         setNoMoreProfiles(false);
       }
       return;
@@ -162,7 +183,10 @@ const DiscoverPage = () => {
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1;
       setHistoryIndex(newIndex);
-      setCurrentProfile(profileHistory[newIndex]);
+      setCurrentProfile({
+        ...profileHistory[newIndex],
+        fotoUrl: toCloudinaryHiRes(profileHistory[newIndex].fotoUrl) as any,
+      });
       setNoMoreProfiles(false);
     }
   };
@@ -176,12 +200,12 @@ const DiscoverPage = () => {
       setIsAnimating(true);
       setSwipeDirection(tipo);
       setError(null);
-      
+
       // Esperar a que termine la animación antes de hacer el swipe
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       const response = await discoverService.swipe(currentProfile.id, tipo);
-      
+
       // Si hay match, mostrar modal
       if (response.match) {
         setMatchedUserName(`${currentProfile.nombre} ${currentProfile.apellido}`);
@@ -211,7 +235,7 @@ const DiscoverPage = () => {
       }
     } catch (error: unknown) {
       console.error('Error al hacer swipe:', error);
-      
+
       // Si el error es 409 (conflict), significa que ya se interactuó con este usuario
       // En este caso, ocultar el perfil actual y cargar el siguiente
       if (axios.isAxiosError(error) && error.response?.status === 409) {
@@ -220,7 +244,7 @@ const DiscoverPage = () => {
           setProfileHistory(prev => prev.filter((_, idx) => idx !== historyIndex));
           setHistoryIndex(-1);
         }
-        
+
         // Ocultar el perfil actual y cargar el siguiente
         try {
           await loadNextProfile(0);
@@ -248,7 +272,7 @@ const DiscoverPage = () => {
     <div className="discover-page">
       <BackgroundPattern />
       <ThemeToggle />
-      
+
       {/* Header */}
       <div className="discover-header">
         <div className="discover-header-content">
@@ -264,31 +288,30 @@ const DiscoverPage = () => {
       <div className="discover-filters">
         <div className="discover-filters-row">
           <select
-  value={sedeFilter}
-  onChange={e => setSedeFilter(e.target.value)}
-  className="discover-filter-select"
->
-  <option value="">Todas las sedes</option>
-  {sedeOptions.map(sede => (
-    <option key={sede} value={sede}>
-      {sede}
-    </option>
-  ))}
-</select>
+            value={sedeFilter}
+            onChange={e => setSedeFilter(e.target.value)}
+            className="discover-filter-select"
+          >
+            <option value="">Todas las sedes</option>
+            {sedeOptions.map(sede => (
+              <option key={sede} value={sede}>
+                {sede}
+              </option>
+            ))}
+          </select>
 
-<select
-  value={carreraFilter}
-  onChange={e => setCarreraFilter(e.target.value)}
-  className="discover-filter-select"
->
-  <option value="">Todas las carreras</option>
-  {carreraOptions.map(carrera => (
-    <option key={carrera} value={carrera}>
-      {carrera}
-    </option>
-  ))}
-</select>
-
+          <select
+            value={carreraFilter}
+            onChange={e => setCarreraFilter(e.target.value)}
+            className="discover-filter-select"
+          >
+            <option value="">Todas las carreras</option>
+            {carreraOptions.map(carrera => (
+              <option key={carrera} value={carrera}>
+                {carrera}
+              </option>
+            ))}
+          </select>
 
           <input
             type="text"
@@ -368,13 +391,13 @@ const DiscoverPage = () => {
                 className="discover-nav-button discover-nav-button-left"
                 title="Perfil anterior"
               >
-                <ArrowLeftIcon 
-                  size={22} 
+                <ArrowLeftIcon
+                  size={22}
                   color="currentColor"
                 />
               </button>
 
-              <StudentCard 
+              <StudentCard
                 key={currentProfile.id}
                 usuario={currentProfile}
                 isAnimating={isAnimating}
@@ -389,8 +412,8 @@ const DiscoverPage = () => {
                 className="discover-nav-button discover-nav-button-right"
                 title="Skipear estudiante"
               >
-                <ArrowRightIcon 
-                  size={22} 
+                <ArrowRightIcon
+                  size={22}
                   color="currentColor"
                 />
               </button>
@@ -402,13 +425,13 @@ const DiscoverPage = () => {
             />
           </>
         )}
-        
+
       </div>
 
       <NavigationBar isModalOpen={isModalOpen || showMatchModal} />
-      
+
       {/* Modal de Match */}
-      <MatchModal 
+      <MatchModal
         isOpen={showMatchModal}
         onClose={() => setShowMatchModal(false)}
         matchName={matchedUserName}
@@ -418,4 +441,3 @@ const DiscoverPage = () => {
 };
 
 export default DiscoverPage;
-
